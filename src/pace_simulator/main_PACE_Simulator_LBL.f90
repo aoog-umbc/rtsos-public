@@ -3335,18 +3335,18 @@ SUBROUTINE WV_LBL_SETUP
 USE GLOBAL_DATA, ONLY : NWV, WV
 IMPLICIT NONE
 INTEGER,PARAMETER :: N_BAND_INDX=20
-REAL*8, DIMENSION(N_BAND_INDX):: WAVELENGTH_STEP=(/1.0d0,0.5d0, 0.01d0,0.5d0,0.005d0,0.5d0,   &
-                                          0.01d0,0.5d0,0.005d0,0.01d0,0.5d0,   &
-                                          0.005d0,0.01d0,0.2d0,0.01d0,0.02d0,  &
-                                          0.01d0,0.02d0,0.02d0,0.1d0/)
-REAL*8, DIMENSION(N_BAND_INDX):: WAVELENGTH_BAND_START=                                 &
-                                   (/299.0d0,349.5d0, 586.D0,606.0D0,627.0D0,637.0d0  ,&
-                                     641.0D0, 666.0D0,686.0D0,700.0D0,751.0D0, &
-                                     758.0D0,780.0D0,856.0D0,930.0D0,1230.0D0, &
-                                     1370.0D0,1630.0D0,2120.0D0,2240.0D0/)
-INTEGER, DIMENSION(N_BAND_INDX):: WAVELENGTH_BAND_SIZE=(/50,474,2000,42,2000,8,2500,40, &
-                                    2800,5100,14,4400,7600,195,2001,1001,   &
-                                    2001,1001,1001,201/)
+REAL*8, DIMENSION(N_BAND_INDX):: WAVELENGTH_STEP=                      &
+         (/1.0d0,   0.5d0,  0.01d0,  0.5d0,  0.005d0,   0.5d0, 0.01d0, &
+           0.5d0, 0.005d0,  0.01d0,  0.5d0,  0.005d0,  0.01d0,  0.2d0, &
+          0.01d0,  0.02d0,  0.01d0, 0.02d0,   0.02d0,   0.1d0/)
+REAL*8, DIMENSION(N_BAND_INDX):: WAVELENGTH_BAND_START=                &
+       (/299.0d0, 349.5d0,  586.D0, 606.0D0, 627.0D0, 637.0d0,641.0D0, &
+         666.0D0, 686.0D0, 700.0D0, 751.0D0, 758.0D0, 780.0D0,856.0D0, &
+         930.0D0,1230.0D0,1370.0D0,1630.0D0,2120.0D0,2240.0D0/)
+INTEGER, DIMENSION(N_BAND_INDX):: WAVELENGTH_BAND_SIZE= &
+       (/     50,     474,   2000,       42,   2000,       8,   2500,  &
+              40,    2800,   5100,       14,   4400,    7600,    195,  &
+            2001,    1001,   2001,     1001,   1001,     201          /)
 
 INTEGER :: IWV,I_BAND_INDX,I_WV_DSPLC
 

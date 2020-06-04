@@ -61,7 +61,7 @@ WRITE(*,*) 'TOO FEW INPUTS'
 WRITE(*,*) '***ERROR***'
 WRITE(*,*) ''
 WRITE(*,*) 'USEAGE:'
-WRITE(*,*) 'rtsos_rao_dg.out input.file output.file'
+WRITE(*,*) 'rtsos_rao_dg.exe input.file output.file'
 WRITE(*,*) ''
 STOP
 ENDIF

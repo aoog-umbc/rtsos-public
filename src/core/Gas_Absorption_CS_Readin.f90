@@ -11,7 +11,7 @@ SUBROUTINE atmos_dir_readin
 
 IF(atmos_dir == '00000')THEN
     OPEN(unit=1,file='gas_absorption_coeff_dir',status='old');
-    READ(1,*)atmos_dir
+    READ(1,'(A)')atmos_dir
     CLOSE(1)
 ELSE
     return
