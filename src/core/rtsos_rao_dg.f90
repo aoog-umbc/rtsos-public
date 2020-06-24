@@ -177,8 +177,14 @@ SEC_RAD_CORR=.true.
 RAD_MAP=.true.
 
 FWDCN_CORR_FLAG=.false.
+
+!DOUBLE_GAUSSIAN_QUAD=.true. and PSEUDO_VIEWING_QUAD=.false. are important
+!to ensure proper ielnastic scattering calculation
+!Don't try to change the value of these two logical flags if inelastic scattering is enabled.
 DOUBLE_GAUSSIAN_QUAD=.true.
 PSEUDO_VIEWING_QUAD=.false.  ! DEFAULT SHOULD BE .FALSE.
+! Don't change the above two logical flags unless there a good reason.
+! Don't change the above two logical flags unless there a good reason.
 
 WLR_FLAG=WLR_FLAG_INPUT ! OUTPUT WATER LEAVING RADIANCE IF DET IS IN AIR
 WCFLG=WCFLG_INPUT     ! IF TRUE CONSIDER WHITE CAP (FOAM) COVERAGE PARAMETERIZATION
@@ -4588,7 +4594,7 @@ ELSEIF(RTMP<TINY2)THEN
       DLOG(RTMP/RTMP1)
 ELSE
 IF((RTMP1+SIGN*DSQRT(RTMP3))/RTMP2<0.0D0)THEN
-  WRITE(*,*)'TESTING SOURCEFUNC_INTEGRATION_OCEAN',itau, iquad,RTMP,RTMP1,RTMP2
+  WRITE(*,*)'TESTING SOURCEFUNC_INTEGRATION_OCEAN',m,itau, iquad,RTMP,RTMP1,RTMP2
   STOP
 ENDIF
 
