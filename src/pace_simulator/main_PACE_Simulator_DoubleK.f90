@@ -87,12 +87,12 @@ INTEGER :: AP_SELECT       !=1 PHYTOPLANKTON ABSORPTION COEFFICIENTS OF BRICAUD
 !    the absorption coefficient
 INTEGER :: WV_SEG_FLAG !wv_seg_flag, 0: all; 1: seg1+3only; 2: seg2only; 3: seg1+2+3; 4: seg4only
 REAL*8 :: AirSensor_Height
-CHARACTER*160 :: aux_dir='00000'
+CHARACTER*360 :: aux_dir='00000'
 
 CONTAINS
 SUBROUTINE aux_dir_readin
 IF(aux_dir=='00000')THEN
-  OPEN(UNIT=1,FILE='./pace_auxiliary_directory',STATUS='OLD',ACTION='READ')
+  OPEN(UNIT=1,FILE='./auxiliary_directory',STATUS='OLD',ACTION='READ')
   READ(1,'(A)')aux_dir
   CLOSE(1)
 ELSE
@@ -318,11 +318,11 @@ LOGICAL :: file_e
 integer time_array_0(8), time_array_1(8)
 real start_time, finish_time
 
-CHARACTER*160 :: CFILE1,CFILETMP
+CHARACTER*360 :: CFILE1,CFILETMP
 
 INTEGER :: NARGS,IARGC
-CHARACTER(LEN=180) :: INFILE   ! Modification for scripting (MJG)
-CHARACTER(LEN=180) :: OUTFILE  ! Modification for scripting (MJG)
+CHARACTER(LEN=360) :: INFILE   ! Modification for scripting (MJG)
+CHARACTER(LEN=360) :: OUTFILE  ! Modification for scripting (MJG)
 ! Read inputs from the command line
 NARGS = IARGC()
 IF(NARGS.LT.1) THEN
@@ -436,9 +436,9 @@ ENDIF
 
 READ(1,*)INTTMP
 IF(INTTMP==0)THEN
-  SUNGLINT_INPUT=.true.
+	SUNGLINT_INPUT=.true.
 ELSE
-  SUNGLINT_INPUT=.false. ! NO Sun glint WILL BE PRESENT
+	SUNGLINT_INPUT=.false. ! NO Sun glint WILL BE PRESENT
 ENDIF
 
 READ(1,*)INTTMP
@@ -493,13 +493,14 @@ ENDIF
 !                    OCEAN_FCDOM_FLAG,OCEAN_RAMAN_FLAG)
 INTTMP=len_trim(OUTFILE)
 IF(OUTFILE(INTTMP-2:INTTMP) .ne. '.h5') OUTFILE=TRIM(OUTFILE)//'.h5'
+WRITE(*,*)'OUTPUT FILE IS:',OUTFILE
+
 INQUIRE(FILE=OUTFILE, EXIST=file_e)
 IF(file_e) then
-  write(*,*) 'warning, filename exist, a string is appended'
-  OUTFILE='new_'//TRIM(OUTFILE)
+!  write(*,*) 'warning, filename exist, a string is appended'
+!  OUTFILE='new_'//TRIM(OUTFILE)
+  stop 'warning, output filename exist, exiting'
 ENDIF
-
-WRITE(*,*)'OUTPUT FILE IS:',OUTFILE
 
 IF(ABS(AirSensor_Height)<1.0E-6 .OR. ABS(AirSensor_Height)>=100.0D0)THEN
   WRITE(*,*)'AirSensor_Height ==0 .or. AirSensor_Height >=100 km'
@@ -1226,7 +1227,7 @@ USE HDF5
 USE ISO_C_BINDING
 
 IMPLICIT none
-CHARACTER*160 :: CFILE1
+CHARACTER*360 :: CFILE1
 
 INTEGER :: NTHETAOUT,NPHIOUT,NTLYERA,NUMMIEUSE,ICOM
 
@@ -1259,7 +1260,7 @@ INTEGER:: MPLIN,NDETOUT,ITHETA,IPHI,IWV,ILAYER,IDET,IMIE
 ! HDF 5 DEFINITION
 ! This should map to REAL*8 on most modern processors
 !INTEGER, PARAMETER :: real_kind_15 = SELECTED_REAL_KIND(Fortran_REAL_8)
-CHARACTER(LEN=180) :: HDF5FILENAME
+CHARACTER(LEN=360) :: HDF5FILENAME
 INTEGER(HID_T)  :: file, space, dset, attr ! Handles
 INTEGER :: hdferr
 INTEGER(hsize_t),   DIMENSION(1:2) :: dims
@@ -1908,9 +1909,9 @@ dimscl=(/ 1 /)
 CALL h5screate_simple_f(1, dimscl, space, hdferr)
 CALL h5dcreate_f(file, 'SUN_GLINT_FLAG', H5T_IEEE_F32LE, space, dset, hdferr)
 IF(SUNGLINT_INPUT)THEN
-  HDF5ITMP=1
-ELSE
   HDF5ITMP=0
+ELSE
+  HDF5ITMP=1
 ENDIF
 f_ptr=C_LOC(HDF5ITMP(1))
 CALL h5dwrite_f(dset,H5T_NATIVE_INTEGER,f_ptr, hdferr)
