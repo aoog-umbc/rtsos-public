@@ -120,14 +120,25 @@ Including the IPT, there are 7 numbers at each line.  The following proctor is u
 \centering
 \begin{tabular}{llllllll}
 &Detector & BN&BN&BN& BN&BN&BN \\
-&IPT  &       TAU&LBDOM&wavelength&Temperature&EFLRSC&BN \\
+&IPT  &       TAU&LBDOM&wavelength&Temperature&EFLRSC&ALH \\
 &WaterInterface & WindSpeed & re(mwater)& im(mwater)&GlintFlag&RSR0P& BN \\
 &Lambertian & albedo& flam&re(mbottom)&im(mbottom)&BN&BN \\
 &polarized bottom& pBRDFa&pBRDFk&pBRDFb&pBRDFe&NMBRE&NMBIM
 \end{tabular}
 \label{tab:InputFile}
 \end{table}
-where BN means Blank Number, which ignored by the program; TAU is the optical depth of that layer; LBDOM is the single scattering albedo of that layer; wavelength is in nanometers; Temperature is in Kelvin, EFLRSC is internally used by the inelastic scattering option (by default it could be set to 0); WindSpeed is the wind speed (m/s); re(mwater) and im(mwater) are the real and imaginary parts of the water refractive index; GlintFlag = 0 includs sun glints while  GlintFlag = 1 does NOT include sun glint; RSR0P is the remote sensing reflectance just above the ocean surface. RSR0P is a user supplied value to calculate how Remote Sensing Reflectance just above ocean water propagate to the sensor level. For normal radiative transfer simulation, RSR0P should be zero by default. RSR0P $>$ 0 should only be used with IPT=-101. 
+where BN means Blank Number, which ignored by the program; TAU is the optical depth of that layer; LBDOM is the single scattering albedo of that layer; wavelength is in nanometers; Temperature is in Kelvin, EFLRSC is internally used by the inelastic scattering option (by default it could be set to 0); ALH is the atmospheric layer height. ALH is only useful for calculating pseudospherical shell. To perform pseudospherical shell calculation, use the following in your main program:
+
+\verb!USE RTUTILITY, ONLY : PSEUDO_SPHERICAL_SHELL!
+.
+.
+.
+
+\verb!PSEUDO_SPHERICAL_SHELL=.true.!
+
+And set ALH in the atmospheric layers properly.
+
+WindSpeed is the wind speed (m/s); re(mwater) and im(mwater) are the real and imaginary parts of the water refractive index; GlintFlag = 0 includs sun glints while  GlintFlag = 1 does NOT include sun glint; RSR0P is the remote sensing reflectance just above the ocean surface. RSR0P is a user supplied value to calculate how Remote Sensing Reflectance just above ocean water propagate to the sensor level. For normal radiative transfer simulation, RSR0P should be zero by default. RSR0P $>$ 0 should only be used with IPT=-101. 
 For Lambertian surface, the value of  albedo tells the lambertian surface reflection albedo;  flam is the fraction of the surface which is lambertian reflection; The values of re(mbottom) and im(mbottom) are the real and imaginary refractive index of the surface which are used to determine Fresnel reflection when flam is less than 1. 
 
 Once the SOS code reads an IPT of in (-200 -101, -201), it won't accept the four object specification, because there should be nothing below bottom.  The line following the line of IPT=(-200 -101, -201) contains three integers: NCOL, NQUADA, and NQUADO.  NCOL is the number of scattering orders to be performed.  NCOL=10 normally gives fairly good precision. NQUADA and NQUADO are the quadrature numbers needed for the atmosphere and ocean source function integration, respectively.  For the single quadrature code, NQUADO will be ignored.  The next line contains three integers: NUMMIE, MAXLORD, and MAXMORD.  NUMMIE is the number of Mie particle files.  MAXLORD is the maximum L order used to expand the scattering matrices in terms of the Wigner d functions.  MAXMORD is the maximum number of Fourier series order.  There are NUMMIE lines following this line.  Each line specifies the file names of the input files.  The sequence of the file tells the SOS code which IPT this file is associated with.
