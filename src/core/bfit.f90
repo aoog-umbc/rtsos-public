@@ -319,7 +319,7 @@ enddo
 	  enddo
 !	  tmp=ABSDIFF(nstr,y,ysig,apl,a)
 !	  write(*,*)intflag,'th call error and cor=',tmp,cor
-      return
+!      return
     endif
 deallocate(pl,dl00,dl20,dl2p2,dl2n2,b,a,apl,u)
 end
