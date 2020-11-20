@@ -5,8 +5,8 @@ F90=gfortran
 #F90=ifort
 #FCFLAG= -g
 #FCFLAG=-real-size 64 -O3
-#FCFLAG=-O3
-FCFLAG= -g -fbounds-check -ffpe-trap=invalid,zero,overflow -fbacktrace -finit-real=nan
+FCFLAG=-O3
+#FCFLAG= -g -fbounds-check -ffpe-trap=invalid,zero,overflow -fbacktrace -finit-real=nan
 
 #HDF5DIR = /usr/local/hdf5-1.8.13
 #HDF5LIB=-I$(HDF5DIR)/include

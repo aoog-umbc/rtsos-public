@@ -32,6 +32,8 @@ def input_writer(filestrbase,chla,iaerosol,irh,theta0,tau550):
     f.write("%d" % nquadainput + '        #NQUADAINPUT \n')
     f.write("%d" % nquadoinput + '        #NQUADOINPUT \n')
     f.write("%d" % MAXMORDINPUT + '        #MAXMORDINPUT \n')
+	f.write("%d" % NTHETAV + '        #NTHETAV \n')
+    f.write("%d" % NPHIV + '        #NPHIV \n')
     f.write("%d" % chla_homogeneity + '        #CHLA_HOMOGENEITY, 1=.true. 0=.false. \n')
     f.write("%d" % ocean_raman_flag + '        #OCEAN_RAMAN_FLAG, 1=.true. 0=.false. \n')
     f.write("%d" % ocean_fchla_flag + '        #OCEAN_FCHLA_FLAG, 1=.true. 0=.false. \n')
@@ -86,6 +88,8 @@ ncolinput=20
 nquadainput=40
 nquadoinput=60
 MAXMORDINPUT=20
+NTHETAV=36
+NPHIV=19
 
 chla_homogeneity=1
 ocean_raman_flag=1
