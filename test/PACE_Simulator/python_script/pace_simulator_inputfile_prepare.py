@@ -7,7 +7,7 @@ def input_writer(filestrbase,ichla,itheta,ipss):
     f.write("%f" % theta0[itheta]+ '       #THETA0 in degrees \n')
     f.write("%f" % tau550 + '        #TAU550 \n')
     f.write("%d" % irh+ '        #Relative Humidity IRH=1,5, RH=[0.50,0.70,0.80,0.90,0.95] \n')
-    f.write("%d" % iaerosol+ '        #IAEROSOL=1,20. 1-10 is Shettle and Fenn, 11-20 is Ahmad model \n')
+    f.write("%d" % iaerosol+ '        #IAEROSOL=-99,1,20. -99 read in from file; 1-10 is Shettle and Fenn, 11-20 is Ahmad model \n')
     f.write("%d" % ocean_case_select + '   #OCEAN_CASE_SELECT, case 0(atmosphere only), case 1 [Chla] parameterization, case 2 [Chla]+Sediment, case 3: seven parameter model\n')
     f.write("%f" % water_depth_max + '   #water_depth_max \n')
     f.write("%f" % chla[ichla] + '        #CHLa \n')
@@ -47,6 +47,7 @@ def input_writer(filestrbase,ichla,itheta,ipss):
     f.write("%f" % AirSensor_Height + '       # AirSensor_Height unit km \n')
     f.write("%d" % pss_flag[ipss] + '       # pseudospherical flag, 0 turn off; 1: turn on \n')
     f.write("%s" % atmos_profile_filename +'\n')
+    f.write("%s" % aerosol_phasematrix_file +'\n')
     f.write("%s" % 'output_ps_' + filestrbase+'\n')
     f.close
 
@@ -116,7 +117,7 @@ pressure_surface=1013.0 #surface pressure in mb
 
 atmos_profile_base='afglus'
 atmos_profile_filename=atmos_profile_base+'.dat'
-
+aerosol_phasematrix_file='output_flexible_nmode3_fmixing_2_fmfrac_0.500_dmfrac_0.200_cmfrac_0.300_dmsfrac_0.600_fwatersol_0.600_fBrc_0.100_fsoot_0.300.h5'
 #possible atmosphere profiles are:
 #afglus.dat
 #afglsw.dat

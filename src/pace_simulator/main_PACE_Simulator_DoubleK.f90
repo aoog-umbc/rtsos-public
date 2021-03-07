@@ -270,6 +270,10 @@ REAL*8, ALLOCATABLE,DIMENSION(:) :: TAUR,DEPOL_A,TAU_TG,TAU_TG_H2O,TAU_TG_CO2,TA
 									TAU_TG_NO2, PNDLY,ARSLND1_Save,ARSLND2_Save,&
                                     REFF1_Save,REFF2_Save,VEFF1_Save,VEFF2_Save
 REAL*8, ALLOCATABLE,DIMENSION(:,:) ::MRR1_Save,MRI1_Save,MRR2_Save,MRI2_Save
+
+REAL*8 :: ARSLND_NonSpherical,REFF_NonSpherical,VEFF_NonSpherical
+REAL*8, ALLOCATABLE,DIMENSION(:) :: MRR_NonSpherical,MRI_NonSpherical
+
 ! TAUR(ICALIPSO),  RAYLEIGH OPTICAL DEPTH AT WAVLENTGH WV(IWV) AT LAYER(ILAYER)
 ! TAU_TG(ILAYER): ABSORPTIVE OPTICAL DEPTH FOR TRACE GAS
 
@@ -339,7 +343,7 @@ LOGICAL :: file_e
 integer time_array_0(8), time_array_1(8)
 real start_time, finish_time
 
-CHARACTER*360 :: CFILE1,CFILETMP,CFILE_AP
+CHARACTER*360 :: CFILE1,CFILETMP,CFILE_AP,CFILE_AEROSOLS
 
 INTEGER :: NARGS,IARGC
 CHARACTER(LEN=360) :: INFILE   ! Modification for scripting (MJG)
@@ -485,6 +489,7 @@ ELSE
 	PSEUDO_SPHERICAL_SHELL=.FALSE.
 ENDIF
 READ(1,*)CFIlE_AP    ! Atmosphere number density profile
+READ(1,*)CFILE_AEROSOLS ! AEROSOL PHASE MATRIX FILE
 READ(1,*)OUTFILE
 CLOSE(1)
 
@@ -668,7 +673,8 @@ ALLOCATE(RECDATASTREAM(NREC,7),PNDLY(NTLYERA),                                  
          REFF1_Save(NUMMIEUSE),REFF2_Save(NUMMIEUSE),VEFF1_Save(NUMMIEUSE),     &
          VEFF2_Save(NUMMIEUSE),ARSLND1_Save(NUMMIEUSE),ARSLND2_Save(NUMMIEUSE),&
          MRR1_Save(NUMMIEUSE,NWV_BAND),MRI1_Save(NUMMIEUSE,NWV_BAND),           &
-         MRR2_Save(NUMMIEUSE,NWV_BAND),MRI2_Save(NUMMIEUSE,NWV_BAND))
+         MRR2_Save(NUMMIEUSE,NWV_BAND),MRI2_Save(NUMMIEUSE,NWV_BAND), &
+         MRR_NonSpherical(NWV_BAND),MRI_NonSpherical(NWV_BAND))
 
 CALL SUNLREADIN
 
@@ -679,7 +685,9 @@ CALL WATER_ABSORPTION_IOCCG_READ
 
 CALL Particle_PHMX_Assign(NUMMIEUSE,NWV_BAND,IAEROSOL,IRH,REFF1_Save,    &
           REFF2_Save,VEFF1_Save,VEFF2_Save,MRR1_Save,MRI1_Save,MRR2_Save,&
-          MRI2_Save,ARSLND1_Save,ARSLND2_Save)
+          MRI2_Save,ARSLND1_Save,ARSLND2_Save,ARSLND_NonSpherical,       &
+          REFF_NonSpherical,VEFF_NonSpherical,MRR_NonSpherical,          &
+          MRI_NonSpherical,CFILE_AEROSOLS)
 CALL ARSL_VERP_INIT(NTLYERA,PNDLY)
 
 DIRADFULL=0.0d0
@@ -1252,7 +1260,9 @@ CALL STOKESOUT(OUTFILE,MU_IN,NTHETAOUT,NPHIOUT,PHIOUT,MUOUT,                  &
         TAU_TG_CO2_Save,TAU_TG_CH4_Save,TAU_TG_O2_Save,TAU_TG_O3_Save,        &
 		TAU_TG_NO2_Save, NTLYERA,ARSLND1_Save,ARSLND2_Save,NUMMIEUSE,         &
         REFF1_Save,REFF2_Save,VEFF1_Save,VEFF2_Save,                          &
-        MRR1_Save,MRR2_Save,MRI1_Save,MRI2_Save,TEMPERTURE,SALINITY)
+        MRR1_Save,MRR2_Save,MRI1_Save,MRI2_Save,ARSLND_NonSpherical,          &
+        REFF_NonSpherical,VEFF_NonSpherical,MRR_NonSpherical,MRI_NonSpherical,&
+        TEMPERTURE,SALINITY)
 CALL PACE_FWHM_DEALLO
 DEALLOCATE(XK,YK)
 IF(OCEAN_FCHLA_FLAG .OR. OCEAN_FCDOM_FLAG .OR. OCEAN_RAMAN_FLAG) &
@@ -1273,6 +1283,7 @@ CLOSE(55)
 DEALLOCATE(DIRAD,DSTOKES,DIRADFULL,DSTOKESFULL,                                &
           PNDLY,ARSLND1_Save,ARSLND2_Save,REFF1_Save,REFF2_Save,               &
           VEFF1_Save,VEFF2_Save,MRR1_Save,MRI1_Save,MRR2_Save,MRI2_Save,       &
+          MRR_NonSpherical,MRI_NonSpherical,                                   &
           WAVELENGTH_Table_Save,TAU_ARSL_Ext_Save,TAU_ARSL_Scat_Save,          &
           TAU_RAY_Save,DEPOL_A_Save,TAU_TG_Save,TAU_TG_H2O_Save,TAU_TG_CO2_Save,&
           TAU_TG_CH4_Save,TAU_TG_O2_Save,TAU_TG_O3_Save,TAU_TG_NO2_Save)
@@ -1291,7 +1302,9 @@ SUBROUTINE  STOKESOUT(CFILE1,MU_IN,NTHETAOUT,NPHIOUT,PHIOUT,MUOUT,         &
 		TAU_TG_CH4_Save,TAU_TG_O2_Save,TAU_TG_O3_Save, TAU_TG_NO2_Save,    &
 		NTLYERA,ARSLND1_Save,ARSLND2_Save,NUMMIEUSE,  &
         REFF1_Save,REFF2_Save,VEFF1_Save,VEFF2_Save,             &
-        MRR1_Save,MRR2_Save,MRI1_Save,MRI2_Save,TEMPERTURE,SALINITY)
+        MRR1_Save,MRR2_Save,MRI1_Save,MRI2_Save,ARSLND_NonSpherical,          &
+        REFF_NonSpherical,VEFF_NonSpherical,MRR_NonSpherical,MRI_NonSpherical,&
+        TEMPERTURE,SALINITY)
 
 USE GLOBAL_DATA
 USE PACE_INSTRUMENT_DESIGN
@@ -1322,6 +1335,10 @@ REAL*8,DIMENSION(NPHIOUT) :: PHIOUT
 !REAL*8,DIMENSION(1:NTLYERA+1) ::ALT_LYRA
 REAL*8,DIMENSION(NUMMIEUSE) ::REFF1_Save,REFF2_Save,VEFF1_Save,VEFF2_Save,ARSLND1_Save,ARSLND2_Save
 REAL*8,DIMENSION(NUMMIEUSE,NWV_BAND) ::MRR1_Save,MRR2_Save,MRI1_Save,MRI2_Save
+
+REAL*8,INTENT(IN) :: ARSLND_NonSpherical,REFF_NonSpherical,VEFF_NonSpherical
+REAL*8,DIMENSION(NWV_BAND),INTENT(IN) :: MRR_NonSpherical,MRI_NonSpherical
+
 REAL*8,INTENT(IN) :: TEMPERTURE,SALINITY
 
 REAL*8,DIMENSION(NDET,NWV_BAND,2) :: DIRADFULL_AVG  ! DIRADFULL(:,1) DOWNWELLING IRADIANCE
@@ -1687,8 +1704,7 @@ CALL h5sclose_f(space, hdferr)
 dimscl=(/ 1 /)
 CALL h5screate_simple_f(1, dimscl, space, hdferr)
 CALL h5dcreate_f(file, 'Aerosol_Rf', H5T_IEEE_F32LE, space, dset, hdferr)
-RTMP=LOG(VEFF1_Save(IMIE)+1.0)
-HDF5RTMP=REFF1_Save(IMIE)*EXP(-2.5*RTMP)
+HDF5RTMP=REFF1_Save(IMIE) ! effective radius
 f_ptr=C_LOC(HDF5RTMP(1))
 CALL h5dwrite_f(dset,H5T_NATIVE_REAL,f_ptr, hdferr)
 CALL h5dclose_f(dset , hdferr)
@@ -1697,8 +1713,7 @@ CALL h5sclose_f(space, hdferr)
 dimscl=(/ 1 /)
 CALL h5screate_simple_f(1, dimscl, space, hdferr)
 CALL h5dcreate_f(file, 'Aerosol_Vf', H5T_IEEE_F32LE, space, dset, hdferr)
-RTMP=LOG(VEFF1_Save(IMIE)+1.0)
-HDF5RTMP=SQRT(RTMP)
+HDF5RTMP=VEFF1_Save(IMIE)
 f_ptr=C_LOC(HDF5RTMP(1))
 CALL h5dwrite_f(dset, H5T_NATIVE_REAL,f_ptr, hdferr)
 CALL h5dclose_f(dset , hdferr)
@@ -1707,8 +1722,7 @@ CALL h5sclose_f(space, hdferr)
 dimscl=(/ 1 /)
 CALL h5screate_simple_f(1, dimscl, space, hdferr)
 CALL h5dcreate_f(file, 'Aerosol_Rc', H5T_IEEE_F32LE, space, dset, hdferr)
-RTMP=LOG(VEFF2_Save(IMIE)+1.0)
-HDF5RTMP=REFF2_Save(IMIE)*EXP(-2.5*RTMP)
+HDF5RTMP=REFF2_Save(IMIE)
 f_ptr=C_LOC(HDF5RTMP(1))
 CALL h5dwrite_f(dset, H5T_NATIVE_REAL,f_ptr, hdferr)
 CALL h5dclose_f(dset , hdferr)
@@ -1717,8 +1731,26 @@ CALL h5sclose_f(space, hdferr)
 dimscl=(/ 1 /)
 CALL h5screate_simple_f(1, dimscl, space, hdferr)
 CALL h5dcreate_f(file, 'Aerosol_Vc', H5T_IEEE_F32LE, space, dset, hdferr)
-RTMP=LOG(VEFF2_Save(IMIE)+1.0)
-HDF5RTMP=SQRT(RTMP)
+HDF5RTMP=VEFF2_Save(IMIE)
+f_ptr=C_LOC(HDF5RTMP(1))
+CALL h5dwrite_f(dset, H5T_NATIVE_REAL,f_ptr, hdferr)
+CALL h5dclose_f(dset , hdferr)
+CALL h5sclose_f(space, hdferr)
+
+
+dimscl=(/ 1 /)
+CALL h5screate_simple_f(1, dimscl, space, hdferr)
+CALL h5dcreate_f(file, 'Aerosol_R_NONSPHERE', H5T_IEEE_F32LE, space, dset, hdferr)
+HDF5RTMP=REFF_NonSpherical
+f_ptr=C_LOC(HDF5RTMP(1))
+CALL h5dwrite_f(dset, H5T_NATIVE_REAL,f_ptr, hdferr)
+CALL h5dclose_f(dset , hdferr)
+CALL h5sclose_f(space, hdferr)
+
+dimscl=(/ 1 /)
+CALL h5screate_simple_f(1, dimscl, space, hdferr)
+CALL h5dcreate_f(file, 'Aerosol_V_NONSPHERE', H5T_IEEE_F32LE, space, dset, hdferr)
+HDF5RTMP=VEFF_NonSpherical
 f_ptr=C_LOC(HDF5RTMP(1))
 CALL h5dwrite_f(dset, H5T_NATIVE_REAL,f_ptr, hdferr)
 CALL h5dclose_f(dset , hdferr)
@@ -1759,6 +1791,26 @@ ALLOCATE(HDF5RARR(NWV_BAND))
 HDF5RARR(1:NWV_BAND)=MRI2_Save(IMIE,1:NWV_BAND)
 CALL h5screate_simple_f(1, dimscl, space, hdferr)
 CALL h5dcreate_f(file, 'Aerosol_Mic', H5T_IEEE_F32LE, space, dset, hdferr)
+CALL h5dwrite_f(dset, H5T_NATIVE_REAL,C_LOC(HDF5RARR(1)), hdferr)
+CALL h5dclose_f(dset , hdferr)
+CALL h5sclose_f(space, hdferr)
+DEALLOCATE(HDF5RARR)
+
+dimscl=(/ NWV_BAND /)
+ALLOCATE(HDF5RARR(NWV_BAND))
+HDF5RARR(1:NWV_BAND)=MRR_NonSpherical(1:NWV_BAND)
+CALL h5screate_simple_f(1, dimscl, space, hdferr)
+CALL h5dcreate_f(file, 'Aerosol_Mr_NONSPHERE', H5T_IEEE_F32LE, space, dset, hdferr)
+CALL h5dwrite_f(dset, H5T_NATIVE_REAL,C_LOC(HDF5RARR(1)), hdferr)
+CALL h5dclose_f(dset , hdferr)
+CALL h5sclose_f(space, hdferr)
+DEALLOCATE(HDF5RARR)
+
+dimscl=(/ NWV_BAND /)
+ALLOCATE(HDF5RARR(NWV_BAND))
+HDF5RARR(1:NWV_BAND)=MRI_NonSpherical(1:NWV_BAND)
+CALL h5screate_simple_f(1, dimscl, space, hdferr)
+CALL h5dcreate_f(file, 'Aerosol_Mic_NONSPHERE', H5T_IEEE_F32LE, space, dset, hdferr)
 CALL h5dwrite_f(dset, H5T_NATIVE_REAL,C_LOC(HDF5RARR(1)), hdferr)
 CALL h5dclose_f(dset , hdferr)
 CALL h5sclose_f(space, hdferr)
@@ -1939,6 +1991,15 @@ ALLOCATE(HDF5RARR(1))
 HDF5RARR=ARSLND2_Save
 CALL h5screate_simple_f(1, dimscl, space, hdferr)
 CALL h5dcreate_f(file, 'Aerosol_Number_Density_CoarseMode', H5T_IEEE_F32LE, space, dset, hdferr)
+CALL h5dwrite_f(dset, H5T_NATIVE_REAL,C_LOC(HDF5RARR(1)), hdferr)
+CALL h5dclose_f(dset , hdferr)
+CALL h5sclose_f(space, hdferr)
+DEALLOCATE(HDF5RARR)
+
+ALLOCATE(HDF5RARR(1))
+HDF5RARR=ARSLND_NonSpherical
+CALL h5screate_simple_f(1, dimscl, space, hdferr)
+CALL h5dcreate_f(file, 'Aerosol_Number_Density_NONSPHERE', H5T_IEEE_F32LE, space, dset, hdferr)
 CALL h5dwrite_f(dset, H5T_NATIVE_REAL,C_LOC(HDF5RARR(1)), hdferr)
 CALL h5dclose_f(dset , hdferr)
 CALL h5sclose_f(space, hdferr)
@@ -2996,6 +3057,7 @@ LOOP_LAYERS: DO ITLYERW=1,NTLYERO+1
      TAURfracLOCAL=BWLOCAL/(BPTCLOCAL+BSTCLOCAL+BWLOCAL)
      ITLYER=NTLYERA+ITLYERW
      NUMMIEANGINPUT(ITLYER)=NUM_SCAT_ANG(2)
+     IF(NUM_SCAT_ANG(2) .NE. NUM_SCAT_ANG(3))STOP 'CHECK NUM_SCAT_ANG'
      CALL PHMXMIXING(NUMMIERT,NUMMIEANGMAX,NUMMIEANGINPUT,PHMXDATASTREAM,&
                      ITLYER,TAURfracLOCAL,DEPOL_O)
   ENDIF
@@ -4014,12 +4076,12 @@ READ(1,*)
 ENDDO
 DO IREAD=1,NWV_AW_IOCCG_LUT
 READ(1,*)WV_AW_IOCCG_LUT(IREAD),AW_IOCCG_LUT(IREAD)
-write(*,*)IREAD,WV_AW_IOCCG_LUT(IREAD),AW_IOCCG_LUT(IREAD)
+!write(*,*)IREAD,WV_AW_IOCCG_LUT(IREAD),AW_IOCCG_LUT(IREAD)
 ENDDO
 CLOSE(1)
 !testing IOCCG reading
-write(*,*)'IOCCG AW Data',WV_AW_IOCCG_LUT(1),AW_IOCCG_LUT(1)
-write(*,*)'IOCCG AW Data',WV_AW_IOCCG_LUT(NWV_AW_IOCCG_LUT),AW_IOCCG_LUT(NWV_AW_IOCCG_LUT)
+!write(*,*)'IOCCG AW Data',WV_AW_IOCCG_LUT(1),AW_IOCCG_LUT(1)
+!write(*,*)'IOCCG AW Data',WV_AW_IOCCG_LUT(NWV_AW_IOCCG_LUT),AW_IOCCG_LUT(NWV_AW_IOCCG_LUT)
 RETURN
 ENDSUBROUTINE WATER_ABSORPTION_IOCCG_READ
 
@@ -4937,7 +4999,10 @@ END SUBROUTINE WV_LBL_SETUP
 
 SUBROUTINE Particle_PHMX_Assign(NUMMIEUSE,NWV_PHMX,IAEROSOL,IRH,REFF1_Save,    &
                  REFF2_Save,VEFF1_Save,VEFF2_Save,MRR1_Save,MRI1_Save,MRR2_Save,&
-                 MRI2_Save,ARSLND1_Save,ARSLND2_Save)
+                 MRI2_Save,ARSLND1_Save,ARSLND2_Save,ARSLND_NonSpherical,       &
+                 REFF_NonSpherical,VEFF_NonSpherical,MRR_NonSpherical,          &
+				 MRI_NonSpherical,CFILE_AEROSOLS)
+
 USE MIE_PHMX_PACE
 USE GLOBAL_DATA,ONLY : OCEAN_CASE_SELECT,                                   &
                 PHYTOPLANKTON_INDEX_REFRACTION,PHYTOPLANKTON_SPECTRAL_SLOPE,&
@@ -4947,11 +5012,21 @@ INTEGER, INTENT(IN)::NUMMIEUSE,NWV_PHMX,IAEROSOL,IRH
 REAL*8,DIMENSION(NUMMIEUSE),INTENT(OUT) :: REFF1_Save,REFF2_Save,VEFF1_Save,VEFF2_Save,&
                                            ARSLND1_Save,ARSLND2_Save
 REAL*8,DIMENSION(NUMMIEUSE,NWV_PHMX),INTENT(OUT) ::MRR1_Save,MRI1_Save,MRR2_Save,MRI2_Save
+REAL*8, INTENT(OUT) :: ARSLND_NonSpherical,REFF_NonSpherical,VEFF_NonSpherical
+REAL*8, INTENT(OUT),DIMENSION(NWV_PHMX) :: MRR_NonSpherical,MRI_NonSpherical
 
 REAL*8::REFF1_LOCAL,VEFF1_LOCAL,REFF2_LOCAL,VEFF2_LOCAL,ARSLND1_LOCAL,ARSLND2_LOCAL
 REAL*8,DIMENSION(:),ALLOCATABLE::MRR1_LOCAL,MRI1_LOCAL,MRR2_LOCAL,MRI2_LOCAL
+CHARACTER*360, INTENT(IN) :: CFILE_AEROSOLS
 
 INTEGER :: FREEFORMFLAG
+
+ARSLND_NonSpherical=0.0D0
+REFF_NonSpherical=0.0D0
+VEFF_NonSpherical=0.0D0
+MRR_NonSpherical=0.0D0
+MRI_NonSpherical=0.0D0
+
 FREEFORMFLAG=1
 
 IF(NWV_PHMX .NE. NWV_BAND)STOP 'CHECK NWV_PHMX'
@@ -4970,22 +5045,33 @@ IF(FREEFORMFLAG==0)THEN
     ARSLND2_LOCAL=0.01d0
 ENDIF
 
-CALL PHMXMIE_PACE_INIT(FREEFORMFLAG,IAEROSOL,IRH,REFF1_LOCAL,VEFF1_LOCAL,      &
-          REFF2_LOCAL,VEFF2_LOCAL,MRR1_LOCAL,MRI1_LOCAL,MRR2_LOCAL,MRI2_LOCAL, &
-          ARSLND1_LOCAL,ARSLND2_LOCAL,PHYTOPLANKTON_INDEX_REFRACTION,&
-          PHYTOPLANKTON_SPECTRAL_SLOPE,SEDIMENT_INDEX_REFRACTION,SEDIMENT_SPECTRAL_SLOPE)
+IF(IAEROSOL>=0)THEN
+	CALL PHMXMIE_PACE_INIT(FREEFORMFLAG,IAEROSOL,IRH,REFF1_LOCAL,VEFF1_LOCAL,      &
+			  REFF2_LOCAL,VEFF2_LOCAL,MRR1_LOCAL,MRI1_LOCAL,MRR2_LOCAL,MRI2_LOCAL, &
+			  ARSLND1_LOCAL,ARSLND2_LOCAL,PHYTOPLANKTON_INDEX_REFRACTION,&
+			  PHYTOPLANKTON_SPECTRAL_SLOPE,SEDIMENT_INDEX_REFRACTION,SEDIMENT_SPECTRAL_SLOPE)
 
-REFF1_Save=REFF1_LOCAL
-REFF2_Save=REFF2_LOCAL
-VEFF1_Save=VEFF1_LOCAL
-VEFF2_Save=VEFF2_LOCAL
-ARSLND1_Save=ARSLND1_LOCAL
-ARSLND2_Save=ARSLND2_LOCAL
+	REFF1_Save=REFF1_LOCAL
+	REFF2_Save=REFF2_LOCAL
+	VEFF1_Save=VEFF1_LOCAL
+	VEFF2_Save=VEFF2_LOCAL
+	ARSLND1_Save=ARSLND1_LOCAL
+	ARSLND2_Save=ARSLND2_LOCAL
 
-MRR1_Save(1,:)=MRR1_LOCAL
-MRI1_Save(1,:)=MRI1_LOCAL
-MRR2_Save(1,:)=MRR2_LOCAL
-MRI2_Save(1,:)=MRI2_LOCAL
+	MRR1_Save(1,:)=MRR1_LOCAL
+	MRI1_Save(1,:)=MRI1_LOCAL
+	MRR2_Save(1,:)=MRR2_LOCAL
+	MRI2_Save(1,:)=MRI2_LOCAL
+
+ELSE
+
+    CALL PHMXMIE_PACE_READIN(CFILE_AEROSOLS,NUMMIEUSE,NWV_PHMX,REFF1_Save,VEFF1_Save,      &
+		  REFF2_Save,VEFF2_Save,MRR1_Save,MRI1_Save,MRR2_Save,MRI2_Save, &
+		  ARSLND1_Save,ARSLND2_Save,ARSLND_NonSpherical,REFF_NonSpherical,&
+          VEFF_NonSpherical,MRR_NonSpherical,MRI_NonSpherical)
+
+ENDIF
+
 
 IF(OCEAN_CASE_SELECT==2)THEN
   DO FREEFORMFLAG=2,3
