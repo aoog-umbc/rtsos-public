@@ -1,4 +1,4 @@
-OBJ=nrlib.o rttype_sos_rao_dg.o Atmosphere_Profile.o Gas_Absorption_CS_Readin.o PACE_Instrument.o Save_Ocean_Rad.o rtsos_rao_dg.o rt_single_scattering.o bessel.o rtspecfunc.o spher.o bfit.o deltafit.o aerosol_microphysical_model.o PACE_MIE_PHMX_Init.o main_PACE_Simulator_DoubleK.o
+OBJ=nrlib.o rttype_sos_rao_dg.o surface_glint.o Atmosphere_Profile.o Gas_Absorption_CS_Readin.o PACE_Instrument.o Save_Ocean_Rad.o rtsos_rao_dg.o rt_single_scattering.o bessel.o rtspecfunc.o spher.o bfit.o deltafit.o aerosol_microphysical_model.o PACE_MIE_PHMX_Init.o main_PACE_Simulator_DoubleK.o
 
 F90=gfortran
 #F90=ifort
@@ -36,6 +36,8 @@ nrlib.o: $(DIRCore)/nrlib.f90
 	 $(F90) -c $(FCFLAG) $(DIRCore)/nrlib.f90
 rttype_sos_rao_dg.o: $(DIRCore)/rttype_sos_rao_dg.f90
 	$(F90) -c $(FCFLAG) $(DIRCore)/rttype_sos_rao_dg.f90
+surface_glint.o: $(DIRCore)/surface_glint.f90
+	$(F90) -c $(FCFLAG) $(DIRCore)/surface_glint.f90
 Atmosphere_Profile.o: $(DIRCore)/Atmosphere_Profile.f90
 	$(F90) -c $(FCFLAG) $(DIRCore)/Atmosphere_Profile.f90
 Gas_Absorption_CS_Readin.o: $(DIRCore)/Gas_Absorption_CS_Readin.f90

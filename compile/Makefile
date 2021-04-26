@@ -1,4 +1,4 @@
-OBJ=nrlib.o rttype_sos_rao_dg.o Save_Ocean_Rad.o bfit.o rtsos_rao_dg.o bessel.o rtspecfunc.o deltafit.o main.o
+OBJ=nrlib.o rttype_sos_rao_dg.o surface_glint.o Save_Ocean_Rad.o bfit.o rtsos_rao_dg.o bessel.o rtspecfunc.o deltafit.o main.o
 
 #F90=pgf90
 F90=gfortran
@@ -22,6 +22,8 @@ nrlib.o:$(DIRCore)/nrlib.f90
 	$(F90) -c $(FCFLAG) $(DIRCore)/nrlib.f90
 rttype_sos_rao_dg.o: $(DIRCore)/rttype_sos_rao_dg.f90
 	$(F90) -c $(FCFLAG) $(DIRCore)/rttype_sos_rao_dg.f90
+surface_glint.o: $(DIRCore)/surface_glint.f90
+	$(F90) -c $(FCFLAG) $(DIRCore)/surface_glint.f90
 Save_Ocean_Rad.o: $(DIRCore)/Save_Ocean_Rad.f90
 	$(F90) -c $(FCFLAG) $(DIRCore)/Save_Ocean_Rad.f90
 bessel.o:$(DIRCore)/bessel.f
@@ -38,3 +40,4 @@ main.o: $(DIRMain)/main.f90
 	$(F90) -c $(FCFLAG) $(LIBSHDF) $(DIRMain)/main.f90
 
 clean:;       rm -f *.o *.exe *.mod
+
