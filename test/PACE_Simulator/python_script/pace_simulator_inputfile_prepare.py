@@ -6,7 +6,7 @@ def input_writer(filestrbase,ichla,itheta,ipss):
     f.write("%f" % wndspd + '        #wind speed \n')
     f.write("%f" % theta0[itheta]+ '       #THETA0 in degrees \n')
     f.write("%f" % tau550 + '        #TAU550 \n')
-    f.write("%d" % irh+ '        #Relative Humidity IRH=1,5, RH=[0.50,0.70,0.80,0.90,0.95] \n')
+    f.write("%f" % RH[irh]+ '        #Relative Humidity IRH=1,8, RH=[0.30,0.50,0.70,0.75,0.80,0.85,0.90,0.95] \n')
     f.write("%d" % iaerosol+ '        #IAEROSOL=-99,1,20. -99 read in from file; 1-10 is Shettle and Fenn, 11-20 is Ahmad model \n')
     f.write("%d" % ocean_case_select + '   #OCEAN_CASE_SELECT, case 0(atmosphere only), case 1 [Chla] parameterization, case 2 [Chla]+Sediment, case 3: seven parameter model\n')
     f.write("%f" % water_depth_max + '   #water_depth_max \n')
@@ -51,10 +51,14 @@ def input_writer(filestrbase,ichla,itheta,ipss):
     f.write("%s" % 'output_ps_' + filestrbase+'\n')
     f.close
 
+RH=np.array([0.30,0.50,0.70,0.75,0.80,0.85,0.90,0.95])
+
+irh=4
 wndspd=5.0
 theta0=np.array([30.0, 85.0])
 tau550=0.1
-irh=3
+
+
 iaerosol=16
 
 #ocean_case_select=np.array([0, 1, 2, 3])

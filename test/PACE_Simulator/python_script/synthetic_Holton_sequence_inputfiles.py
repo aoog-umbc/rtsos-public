@@ -12,7 +12,7 @@ def input_writer(filestrbase,chla,iaerosol,irh,theta0,tau550):
     f.write("%f" % wndspd + '        #wind speed \n')
     f.write("%f" % theta0+ '       #THETA0 in degrees \n')
     f.write("%f" % tau550+ '        #TAU550 \n')
-    f.write("%d" % irh+ '        #Relative Humidity IRH=1,5, RH=[0.50,0.70,0.80,0.90,0.95] \n')
+    f.write("%f" % RH[irh]+ '    #Relative Humidity IRH=1,5, RH=[0.30,0.50,0.70,0.75,0.80,0.85,0.90,0.95] \n')
     f.write("%d" % iaerosol+ '        #IAEROSOL=-99,1,20. -99 read in from file; 1-10 is Shettle and Fenn, 11-20 is Ahmad model \n')
     f.write("%d" % ocean_case_select + '   #OCEAN_CASE_SELECT, case 0(atmosphere only), case 1 [Chla] parameterization, case 2 [Chla]+Sediment, case 3: seven parameter model\n')
     f.write("%f" % water_depth_max + '   #water_depth_max \n')
@@ -57,7 +57,7 @@ def input_writer(filestrbase,chla,iaerosol,irh,theta0,tau550):
     f.write("%s" % 'output_ps_' + filestrbase+'\n')
     f.close
 
-wndspd=5.0                                                                                                                                                         
+wndspd=5.0
 ocean_case_select=1
 monochromatic_flag=0
 atmos_zero=0
@@ -66,6 +66,8 @@ wv_seg_flag=0
 SUNGLINT_INPUT=0
 
 water_depth_max=200.0
+
+RH=np.array([0.30,0.50,0.70,0.75,0.80,0.85,0.90,0.95])
 
 # the following parameters are used in ocean_case_select==2
 # chla, phytoplankton_index_refraction,phytoplankton_spectral_slope,
@@ -182,11 +184,11 @@ for j in range(n_sample):
     chla=0.01+r[0]*(10-0.01)# chla range=[0.01,10]
     theta0=0+r[1]*(85-0)#theta0 range=[0,85]
     tau550=0+r[2]*(0.4-0)#tau550 range=[0,0.4]
-    irh=np.rint(1+r[3]*(5-1))#irh range=[1,5]
+    irh=np.rint(r[3]*(8-1))#irh range=[0,7]
     iaerosol=np.rint(11+r[4]*(20-11))#iaerosol range=[11,20]
     filestrbase='chla%05.2f' % chla \
                +'iaerosol%d' % iaerosol \
-               +'irh%d' % irh \
+               +'rh%05.2f' % RH[irh] \
                +'theta0%05.2f' %theta0 \
                +'tau550%05.2f' %tau550
     input_writer(filestrbase,chla,iaerosol,irh,theta0,tau550)
