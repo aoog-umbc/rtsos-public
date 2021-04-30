@@ -327,7 +327,7 @@ REAL*8 :: RTMP,RTMP1
 !REAL,DIMENSION(5) :: RNDNMBR
 INTEGER:: INTTMP,ICOM,IWV,IWV_CAL,IWV_SUB,IWVEX,IWVEXSTART,ILAYER,IPT, IAEROSOL,IRH, &
           IULO,MPL,KLO,INDEX_TAUPRIME,IREC_SHFT,NILS_TEMP
-
+REAL*8 :: RH_simu
 LOGICAL :: file_e
 integer time_array_0(8), time_array_1(8)
 real start_time, finish_time
@@ -359,7 +359,7 @@ OPEN(unit=1,file=INFILE,status='old')
 READ(1,*)WNDSPD
 READ(1,*)THETA0
 READ(1,*)TAU550
-READ(1,*)IRH
+READ(1,*)RH_simu
 READ(1,*)IAEROSOL
 
 READ(1,*)OCEAN_CASE_SELECT
@@ -498,6 +498,13 @@ WRITE(*,*)'HYSPECTRAL_FLAG,NPQ_FLAG,OCEAN_PHMX_ONE,GAS_ABS_FLAG=', &
 WRITE(*,*)'adg440_Case3,bbp660_Case3,Bp660_backscatteringfraction_Case3=', &
            adg440_Case3,bbp660_Case3,Bp660_backscatteringfraction_Case3
 WRITE(*,*)'Sdg_Case3,Sbp_Case3,S_Bp_Case3=',Sdg_Case3,Sbp_Case3,S_Bp_Case3
+
+LOCINDXTMP=MINLOC(ABS(RH-RH_simu))
+IRH=LOCINDXTMP(1)
+IF(abs(RH(IRH)-RH_simu)>1.0e-4) THEN
+   WRITE(*,*)'INPUT RH_simu VALUE:',RH_simu,'NOT IN RH TABLE'
+   WRITE(*,*)'RELATIVE HUMIDTY TABLE:', IRH, RH(IRH)
+ENDIF
 
 IF(ATMOS_ZERO)THEN
 	TAU550=0.0D0
