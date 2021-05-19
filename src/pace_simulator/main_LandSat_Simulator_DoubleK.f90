@@ -284,7 +284,7 @@ REAL*8 :: MU_IN,WAVELENGTH_MICRON,WAVELENGTH_NANOMETER,TEMPERTURE,SALINITY,&
 
 REAL*8,DIMENSION(:),ALLOCATABLE :: PHIOUT,MUOUT
 
-LOGICAL :: WLR_FLAG_INPUT,WCFLG_INPUT,GAS_ABS_FLAG,CLOUDFLAG
+LOGICAL :: WLR_FLAG_INPUT,WCFLG_INPUT,GAS_ABS_FLAG,CLOUDFLAG,INPUT_TEST_FLAG
 INTEGER :: DELTAM_INPUT
 REAL*8,DIMENSION(:,:) ,ALLOCATABLE:: DIRAD  ! DIRAD(:,1) DOWNWELLING IRADIANCE
                                             ! DIRAD(:,2) UPWELLING IRADIANCE
@@ -332,7 +332,7 @@ LOGICAL :: file_e
 integer time_array_0(8), time_array_1(8)
 real start_time, finish_time
 
-CHARACTER*360 :: CFILE1,CFILETMP,CFILE_AP
+CHARACTER*360 :: CFILE1,CFILETMP,CFILETMP1,CFILE_AP
 
 INTEGER :: NARGS,IARGC
 CHARACTER(LEN=360) :: INFILE   ! Modification for scripting (MJG)
@@ -498,6 +498,8 @@ WRITE(*,*)'HYSPECTRAL_FLAG,NPQ_FLAG,OCEAN_PHMX_ONE,GAS_ABS_FLAG=', &
 WRITE(*,*)'adg440_Case3,bbp660_Case3,Bp660_backscatteringfraction_Case3=', &
            adg440_Case3,bbp660_Case3,Bp660_backscatteringfraction_Case3
 WRITE(*,*)'Sdg_Case3,Sbp_Case3,S_Bp_Case3=',Sdg_Case3,Sbp_Case3,S_Bp_Case3
+
+INPUT_TEST_FLAG=.false.
 
 LOCINDXTMP=MINLOC(ABS(RH-RH_simu))
 IRH=LOCINDXTMP(1)
@@ -1056,30 +1058,30 @@ DO IWV_BAND=NWV_BAND_START,NWV_BAND_END
                    + time_array_1 (7) + 0.001 * time_array_1 (8)
         write(*,*)'rtsosinit elapsed time =', finish_time-start_time
 !! testing rtsosinit
-!open(unit=1,file='recdata_dk',Status='replace')
-!write(1,*)'WV(',IWV_BAND,')=',WV_BAND(IWV_BAND)
-!WRITE(1,*)'RECDATASTREAM'
-!DO INTTMP=1,NREC
-!IPT = RECDATASTREAM(INTTMP,1)
-!WRITE(1,'(I5,6(2x,E13.6))')IPT,RECDATASTREAM(INTTMP,2:7)
-!ENDDO
-!close(1)
-!
-!open(unit=2,file='phmx_dk_001',Status='replace')
-!IMIE=1
-!WRITE(2,*)'PHMXDATASTREAM'
-!DO ITHETA=1,NUMMIEANGINPUT(IMIE)
-!WRITE(2,'(7(2x,E13.6))')PHMXDATASTREAM(IMIE,ITHETA,0:6)
-!ENDDO
-!close(2)
-!open(unit=2,file='phmx_dk_002',Status='replace')
-!IMIE=NTLYERA+1
-!WRITE(2,*)'PHMXDATASTREAM'
-!DO ITHETA=1,NUMMIEANGINPUT(IMIE)
-!WRITE(2,'(7(2x,E13.6))')PHMXDATASTREAM(IMIE,ITHETA,0:6)
-!ENDDO
-!close(2)
+IF(INPUT_TEST_FLAG)THEN
+	write(CFILETMP1,'(f5.1)')WV_BAND(IWV_BAND)
+	CFILETMP1='recdata_dk_'//trim(INFILE(1:12))//'_WV'//trim(CFILETMP1)
+	open(unit=1,file=CFILETMP1,Status='replace')
+	DO INTTMP=1,NREC
+		IPT = RECDATASTREAM(INTTMP,1)
+		WRITE(1,'(I5,6(2x,E13.6))')IPT,RECDATASTREAM(INTTMP,2:7)
+	ENDDO
+	close(1)
 
+	write(CFILETMP1,'(f5.1)')WV_BAND(IWV_BAND)
+	CFILETMP1='phmx_dk'//trim(INFILE(1:12))//'_WV'//trim(CFILETMP1)
+
+	DO IMIE=1,NTLYERA
+		write(CFILETMP,'(I03)')IMIE
+		CFILETMP=trim(CFILETMP1)//'LN'//trim(CFILETMP)
+		open(unit=2,file=CFILETMP,Status='replace')
+		WRITE(2,*)'      <           F11          F22     F33           F44           F12           F34'
+		DO ITHETA=1,NUMMIEANGINPUT(IMIE)
+			WRITE(2,'(7(2x,E13.6))')PHMXDATASTREAM(IMIE,ITHETA,0:6)
+		ENDDO
+		close(2)
+	ENDDO
+ENDIF
         CALL RTSOS(NREC,NDET,RECDATASTREAM,NCOLINPUT,NQUADAINPUT,NQUADOINPUT, &
              DELTATAUAINPUT,DELTATAUOINPUT,NUMMIERT,MAXLORDINPUT,MAXMORDINPUT,    &
              NUMMIEANGINPUT,PHMXDATASTREAM,MU_IN,NTHETAOUT,&
