@@ -6,12 +6,13 @@ Created on Thu Oct 15 11:47:30 2020
 """
 
 import numpy as np                                                                                                                                                      
-def input_writer(filestrbase,chla,iaerosol,irh,theta0,tau550):
+def input_writer(filestrbase,chla,iaerosol,irh,theta0,tau_ref):
     fileinput='input_ps_'+filestrbase
     f = open(fileinput, 'w')
     f.write("%f" % wndspd + '        #wind speed \n')
     f.write("%f" % theta0+ '       #THETA0 in degrees \n')
-    f.write("%f" % tau550+ '        #TAU550 \n')
+	f.write("%f" % wv_pace_ref + '        #WV_PACE_REF \n')
+    f.write("%f" % tau_ref+ '        #TAU_REF \n')
     f.write("%f" % RH[irh]+ '    #Relative Humidity IRH=1,5, RH=[0.30,0.50,0.70,0.75,0.80,0.85,0.90,0.95] \n')
     f.write("%d" % iaerosol+ '        #IAEROSOL=-99,1,20. -99 read in from file; 1-10 is Shettle and Fenn, 11-20 is Ahmad model \n')
     f.write("%d" % ocean_case_select + '   #OCEAN_CASE_SELECT, case 0(atmosphere only), case 1 [Chla] parameterization, case 2 [Chla]+Sediment, case 3: seven parameter model\n')
@@ -177,7 +178,7 @@ def halton(dim, n_sample):
 hs=halton(dim,n_sample) #this gives the sequence of halton terms stacked in 
                        #n_sample dimensional array with 5 independent halton
                        # terms along each dimension
-
+wv_pace_ref=873.0
 
 # Now lets generate different input parameters and hence files based on halton sequnces
 
@@ -185,15 +186,15 @@ for j in range(n_sample):
     r=hs[j] #gives 1d array of 5 independent halton terms
     chla=0.01+r[0]*(10-0.01)# chla range=[0.01,10]
     theta0=0+r[1]*(85-0)#theta0 range=[0,85]
-    tau550=0+r[2]*(0.4-0)#tau550 range=[0,0.4]
+    tau_ref=0+r[2]*(0.4-0)#tau_ref range=[0,0.4]
     irh=np.rint(r[3]*(8-1))#irh range=[0,7]
     iaerosol=np.rint(11+r[4]*(20-11))#iaerosol range=[11,20]
     filestrbase='chla%05.2f' % chla \
                +'iaerosol%d' % iaerosol \
                +'rh%05.2f' % RH[irh] \
                +'theta0%05.2f' %theta0 \
-               +'tau550%05.2f' %tau550
-    input_writer(filestrbase,chla,iaerosol,irh,theta0,tau550)
+               +'tau_ref%05.2f' %tau_ref
+    input_writer(filestrbase,chla,iaerosol,irh,theta0,tau_ref)
 #
 #
 
