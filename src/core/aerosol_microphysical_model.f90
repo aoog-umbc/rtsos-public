@@ -43,7 +43,7 @@ REAL*8,DIMENSION(NWV_SF) ::    MI_WATER_SF=(/1.6D-8,8.45D-9,1.86D-9,9.69D-10,   
 !https://www.nature.com/articles/srep37735
 REAL*8,DIMENSION(NWV_JM) :: MR_BRC_JM=(/1.55D0,1.55D0,1.55D0,1.55D0,1.55D0, &
                             1.55D0,1.55D0,1.55D0,1.55D0,1.55D0/)
-REAL*8,PARAMETER :: ALPHA=10D29, C=2.99792D8, WV_0=300.0D0, GAMMA_KK=2.0D13, K_KK_375=0.01235D0, K_KK_532=0.00243D0
+REAL*8,PARAMETER :: ALPHA=1.0D29, C=2.99792D8, WV_0=0.3D0, GAMMA_KK=2.0D13, K_KK_375=0.01235D0, K_KK_532=0.00243D0
 REAL*8 :: V_0,V
 
 !Mok et al., 2016 (Impacts of brown carbon from biomass burning on surface UV and ozone photochemistry in the Amazon Basin)
