@@ -2,13 +2,15 @@ OBJ=nrlib.o rttype_sos_rao_dg.o surface_glint.o Atmosphere_Profile.o Gas_Absorpt
 
 F90=gfortran
 #F90=ifort
-FCFLAG= -O3
-#FCFLAG=-real-size 64 -O3
-#FCFLAG= -g -fbounds-check
-#FCFLAG= -g -fbounds-check -ffpe-trap=invalid,zero,overflow -finit-real=nan -fcheck=all
 
-#FCFLAG_GAS = -g -fbounds-check
+FCFLAG= -O3
+#FCFLAG= -g -fbounds-check
+
 FCFLAG_GAS = -O3
+#FCFLAG_GAS = -g -fbounds-check
+
+#FCFLAG=-real-size 64 -O3
+#FCFLAG= -g -fbounds-check -ffpe-trap=invalid,zero,overflow -finit-real=nan -fcheck=all
 
 HDF5DIR = /usr/local/Cellar/hdf5@1.10/1.10.7
 HDF5LIB=-I$(HDF5DIR)/include

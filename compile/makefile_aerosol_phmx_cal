@@ -1,9 +1,10 @@
 OBJ=spher.o	nrlib.o aerosol_microphysical_model.o	PACE_Instrument.o		auxiliary_dir_readin.o read_dust_data.o Mie_PHMX_Cal.o	 main_aerosol_phmx_cal.o
 
 F90=gfortran
-FCFLAG= -O3
+#FCFLAG= -O3
 #H5FC=h5fc
-FCFLAG_GAS = -O3
+
+FCFLAG=-g -fbounds-check -ffpe-trap=invalid,zero,overflow -finit-real=nan -fcheck=all
 
 HDF5DIR = /usr/local/Cellar/hdf5@1.10/1.10.7
 HDF5LIB=-I$(HDF5DIR)/include
