@@ -1,13 +1,13 @@
 import numpy as np
 import random
 
-def input_writer(filestrbase,ichla,itheta,ipss):
+def input_writer(filestrbase,ichla,itheta,itau):
     fileinput='input_ps_'+filestrbase
     f = open(fileinput, 'w')
     f.write("%f" % wndspd + '        #wind speed \n')
     f.write("%f" % theta0[itheta]+ '       #THETA0 in degrees \n')
     f.write("%f" % wv_pace_ref + '        #WV_PACE_REF \n')
-    f.write("%f" % tau_ref + '        #TAU_REF \n')
+    f.write("%f" % tau_ref[itau] + '        #TAU_REF \n')
     f.write("%d" % Aerosol_Model[iaerosol]+ '  #IAEROSOL=-99,-1,1,20. -99 read in from file; -1; Ahmad model with flexbile RH and FMF; 1-10 is Shettle and Fenn, 11-20 is Ahmad model \n')
     f.write("%f" % AeroFMF + '        #Aerosol fine mode fraction, only used when Aerosol_Model[iaerosol]==-1 \n')
     f.write("%f" % RH[irh]+ '        #Relative Humidity IRH=1,8, RH=[0.30,0.50,0.70,0.75,0.80,0.85,0.90,0.95] \n')
@@ -49,7 +49,7 @@ def input_writer(filestrbase,ichla,itheta,ipss):
     f.write("%f" % pressure_surface + '       # surface pressure in mb \n')
     f.write("%d" % wv_seg_flag + '        #wv_seg_flag, 0: all; 1: seg1+3only; 2: seg2only; 3 seg1+2+3; 4: seg4only \n')
     f.write("%f" % AirSensor_Height + '       # AirSensor_Height unit km \n')
-    f.write("%d" % pss_flag[ipss] + '       # pseudospherical flag, 0 turn off; 1: turn on \n')
+    f.write("%d" % pss_flag  + '       # pseudospherical flag, 0 turn off; 1: turn on \n')
     f.write("%s" % atmos_profile_filename +'\n')
     f.write("%s" % aerosol_phasematrix_file +'\n')
     f.write("%s" % 'output_ps_' + filestrbase+'\n')
@@ -59,20 +59,14 @@ RH=np.array([0.30,0.50,0.70,0.75,0.80,0.85,0.90,0.95])
 
 irh=4
 wndspd=5.0
-theta0=np.array([30.0, 85.0])
+theta0=np.array([10.0, 30.0, 50.0, 70.0, 85.0])
 wv_pace_ref=873.0
-tau_ref=0.1
+tau_ref=np.array([0.01,0.1,0.2])
 
-Aerosol_Model=([-1,11,12,13,14,15,16,17,18,19,20])
-#Aerosol_Model=([-1]) # flexible FMF and RH options for Ahmad's aerosol model.
+Aerosol_Model=([11,12,13,14,15,16,17,18,19,20])
 
-iaerosol=7
-
-#IAEROSOL=11-20 corresponds to fine mode fraction of (/0.0, 0.01, 0.02, 0.05, 0.1, 0.2, 0.3, 0.5, 0.8, 0.95/)
-#RATIO_FINE_MODE_ZIA=(/0.0, 0.01, 0.02, 0.05, 0.1, 0.2, 0.3, 0.5, 0.8, 0.95/) ! from personal communication with Zia
-
-#AeroFMF=random.random()
-AeroFMF=0.3
+iaerosol=6
+AeroFMF=random.random()
 
 #ocean_case_select=np.array([0, 1, 2, 3])
 ocean_case_select=1
@@ -81,7 +75,7 @@ water_depth_max=200.0
 # the following parameters are used in ocean_case_select==2
 # chla, phytoplankton_index_refraction,phytoplankton_spectral_slope,
 #sediment_index_refraction,sediment_spectral_slope,sediment_concentration
-chla=np.array([0.01, 0.03, 0.1, 0.3, 1.0, 3, 10])
+chla=np.array([0.01, 0.03, 0.1, 0.3, 1.0, 3, 10, 20])
 phytoplankton_index_refraction=1.02
 phytoplankton_spectral_slope=3.0
 sediment_index_refraction=1.2
@@ -90,12 +84,12 @@ sediment_concentration=0.0
 
 # the following parameters are used in ocean_case_select ==3, the seven parameter model
 # chla, adg440, bbp660_BackscatterCoeff,Bp660_BackscatterFraction,Sdg,Sbp,S_Bp
-adg440=1.0                         #adg440 (1/m), range: 0.0:2.5
-bbp660_BackscatterCoeff=0.05       #bbp660 (1/m), range 0:0.1
+adg440=0.065                         #adg440 (1/m), range: 0.0:2.5
+bbp660_BackscatterCoeff=0.005       #bbp660 (1/m), range 0:0.1
 Bp660_BackscatterFraction=0.01     #Bp660_BackscatterFraction, range 0"0.05
-Sdg=0.015                          #Sdg exponential spectral slope of dg absorption (1/nm) range: 0.01:0.02
-Sbp=0.3                            #Sbp power spectral slope of backscattering coefficient (1/nm) range: 0:0.5
-S_Bp=0.01                          #S_Bp power spectral slope of backscattering fraction (1/nm) range: -0.2:0.2
+Sdg=0.018                          #Sdg exponential spectral slope of dg absorption (1/nm) range: 0.01:0.02
+Sbp=0.15                            #Sbp power spectral slope of backscattering coefficient (1/nm) range: 0:0.5
+S_Bp=0.00                          #S_Bp power spectral slope of backscattering fraction (1/nm) range: -0.2:0.2
 
 ncolinput=20
 nquadainput=40
@@ -123,7 +117,7 @@ gas_abs_flag=1
 
 wv_seg_flag=0
 AirSensor_Height=2.2
-pss_flag=np.array([0, 1])
+pss_flag=1   # 0 off, 1 on.
 
 # these two values are the reference values caculated from US standard atmosphere 1976.
 OZONE_COLUMN=345.66 # OZONE IN THE WHOLE COLUMN IN DOBSON UNIT
@@ -143,26 +137,16 @@ aerosol_phasematrix_file='output_flexible_nmode3_fmixing_2_fmfrac_0.500_dmfrac_0
 #afglmw.dat
 
 ###########
-ichla=2
-itheta=1
-ipss=1
-filestrbase='OceanCase%d' % ocean_case_select \
-			+ 'tau_ref_%05.2f' % tau_ref       \
-			+'IAEROSOL%d' % Aerosol_Model[iaerosol] \
-			+'FMF_%05.2f' % AeroFMF
-			
-input_writer(filestrbase,ichla,itheta,ipss)
 
-
-#for ichla in range(len(chla)):
-#	for itheta in range(len(theta0)):
-#		for ipss in range(len(pss_flag)):
-#			filestrbase='OceanCase%d' % ocean_case_select \
-#						+ 'tau_ref_%05.2f' % tau_ref       \
-#						+'chla%05.2f' % chla[ichla] \
-#						+'theta0_%05.2f' %theta0[itheta] \
-#						+'pss%d'%pss_flag[ipss]
-#			input_writer(filestrbase,ichla,itheta,ipss)
+for ichla in range(len(chla)):
+	for itheta in range(len(theta0)):
+		for itau in range(len(tau_ref)):
+			filestrbase='OceanCase%d' % ocean_case_select \
+						+ 'tau_ref_%05.2f' % tau_ref[itau]       \
+						+'chla%05.2f' % chla[ichla] \
+						+'theta0_%05.2f' %theta0[itheta] \
+						+'tau_ref_%05.2f'%tau_ref[itau]
+			input_writer(filestrbase,ichla,itheta,itau)
 
 
 
