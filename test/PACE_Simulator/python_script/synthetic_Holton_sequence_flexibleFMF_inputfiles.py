@@ -52,6 +52,8 @@ def input_writer(filestrbase,wndspd,RH,AeroFMF,H2O_COLUMN,theta0,tau_ref):
     f.write("%d" % wv_seg_flag + '        #wv_seg_flag, 0: all; 1: seg1+3only; 2: seg2only; 3 seg1+2+3; 4: seg4only \n')
     f.write("%f" % AirSensor_Height + '       # AirSensor_Height unit km \n')
     f.write("%d" % pss_flag + '       # pseudospherical flag, 0 turn off; 1: turn on \n')
+    f.write("%s" % aux_dir +'    #aux_dir \n')
+    f.write("%s" % gas_absorption_coeff_dir +'    #gas_absorption_coeff_dir \n')
     f.write("%s" % atmos_profile_filename +'\n')
     f.write("%s" % aerosol_phasematrix_file +'\n')
     f.write("%s" % 'output_ps_' + filestrbase+'\n')
@@ -116,6 +118,9 @@ OZONE_COLUMN=345.66 # OZONE IN THE WHOLE COLUMN IN DOBSON UNIT
 NO2_COLUMN=0.2075   # NO2 IN THE WHOLE COLUMN IN DOBSON UNIT
 
 pressure_surface=1013.0 #surface pressure in mb
+
+aux_dir='/Users/pwzhai/Research/RT/SOS/SOS_Callable/Data/'
+gas_absorption_coeff_dir='/Users/pwzhai/Research/RT/Gas_Absorption_Coefficients/'
 
 atmos_profile_base='afglus'
 atmos_profile_filename=atmos_profile_base+'.dat'
