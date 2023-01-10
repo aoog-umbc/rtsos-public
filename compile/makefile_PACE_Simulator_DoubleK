@@ -15,19 +15,19 @@ FCFLAG_GAS = -O3
 HDF5DIR = /opt/homebrew/Cellar/hdf5/1.12.2_2/
 HDF5LIB=-I$(HDF5DIR)/include
 H5FC=$(HDF5DIR)/bin/h5fc
-LIBSHDF= $(HDF5LIB) -L$(HDF5DIR)/lib/ -lhdf5 -lhdf5_fortran
+LIBSHDF= $(HDF5LIB) -L$(HDF5DIR)/lib/ -lhdf5 -lhdf5_fortran -lhdf5hl_fortran
 
 # cocco options
 #HDF5INCLUDE=-I/usr/include/hdf5/serial/
 #HDF5LIB=/usr/lib/x86_64-linux-gnu/
-#LIBSHDF= $(HDF5INCLUDE) -L$(HDF5LIB) -lhdf5_serial -lhdf5_serial_fortran
+#LIBSHDF= $(HDF5INCLUDE) -L$(HDF5LIB) -lhdf5_serial -lhdf5_serial_fortran -lhdf5hl_fortran
 #H5FC=h5fc
 
 # Taki options
 #HDF5DIR =
 #HDF5LIB=
 #H5FC=ifort
-#LIBSHDF= -lhdf5 -lhdf5_fortran
+#LIBSHDF= -lhdf5 -lhdf5_fortran -lhdf5hl_fortran
 
 DIRCore=../src/core/
 DIRMain=../src/pace_simulator/
