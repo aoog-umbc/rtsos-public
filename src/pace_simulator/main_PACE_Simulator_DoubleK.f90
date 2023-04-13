@@ -3645,7 +3645,7 @@ DO ILYERA=1,NTLYERA
     ENDIF
  ELSE
 !Equation 2 of Wu L et al., Geophysical Research Letters, 2016. https://doi.org/10.1002/2016GL069848
-    PNDLY(ILYERA)=exp(-4.0D0*LOG(2.0D0*(ALTMID-Height_Particle)**2/Height_Variance_Particle**2))
+    PNDLY(ILYERA)=exp(-4.0D0*LOG(2.0D0)*(ALTMID-Height_Particle)**2/Height_Variance_Particle**2)
  ENDIF
 ! IF(ALTMID>HEIGHT(1)) THEN
 !   PNDLY(ILYERA)=BEXPFAC(1)*EXP(-AEXPFAC(1)*(ALTMID-HEIGHT(2)))
