@@ -13,7 +13,7 @@ FCFLAG_GAS = -O3
 #FCFLAG=-real-size 64 -O3
 #FCFLAG= -g -fbounds-check -ffpe-trap=invalid,zero,overflow -finit-real=nan -fcheck=all
 
-HDF5DIR = /opt/homebrew/Cellar/hdf5/1.12.2_2/
+HDF5DIR =/opt/homebrew/Cellar/hdf5/1.14.0/
 HDF5LIB=-I$(HDF5DIR)/include
 H5FC=$(HDF5DIR)/bin/h5fc
 LIBSHDF= $(HDF5LIB) -L$(HDF5DIR)/lib/ -lhdf5 -lhdf5_fortran -lhdf5hl_fortran
