@@ -1,4 +1,4 @@
-OBJ=spher.o	nrlib.o aerosol_microphysical_model.o	MAP_Instrument.o PACE_Instrument.o		auxiliary_dir_readin.o read_dust_data.o Mie_PHMX_Cal.o	 main_aerosol_phmx_cal.o
+OBJ=spher.o	nrlib.o aerosol_microphysical_model.o	MAP_Instrument.o PACE_Instrument.o  read_dust_data.o Mie_PHMX_Cal.o	 main_aerosol_phmx_cal.o
 
 F90=gfortran
 FCFLAG= -O3
@@ -6,10 +6,11 @@ FCFLAG= -O3
 
 #FCFLAG=-g -fbounds-check -ffpe-trap=invalid,zero,overflow -finit-real=nan -fcheck=all
 
-HDF5DIR = /opt/homebrew/Cellar/hdf5/1.12.2_2/
+HDF5DIR =/opt/homebrew/Cellar/hdf5/1.14.0/
 HDF5LIB=-I$(HDF5DIR)/include
 H5FC=$(HDF5DIR)/bin/h5fc
 LIBSHDF= $(HDF5LIB) -L$(HDF5DIR)/lib/ -lhdf5 -lhdf5_fortran
+
 
 # cocco options
 #HDF5INCLUDE=-I/usr/include/hdf5/serial/
@@ -41,8 +42,6 @@ MAP_Instrument.o: $(DIR_PS)/MAP_Instrument.f90
 	$(F90) -c $(FCFLAG) $(LIBSHDF) $(DIR_PS)/MAP_Instrument.f90
 PACE_Instrument.o: $(DIR_PS)/PACE_Instrument.f90
 	$(F90) -c $(FCFLAG) $(LIBSHDF) $(DIR_PS)/PACE_Instrument.f90
-auxiliary_dir_readin.o: $(DIR_Main)/auxiliary_dir_readin.f90
-	$(F90) -c $(FCFLAG) $(DIR_Main)/auxiliary_dir_readin.f90
 read_dust_data.o:   $(DIR_Main)/read_dust_data.f90
 	$(F90) -c $(FCFLAG) $(LIBSHDF) $(DIR_Main)/read_dust_data.f90
 Mie_PHMX_Cal.o: $(DIR_Main)/Mie_PHMX_Cal.f90
