@@ -1,16 +1,16 @@
-OBJ=nrlib.o rttype_sos_rao_dg.o surface_glint.o Atmosphere_Profile.o Gas_Absorption_CS_Readin.o MAP_Instrument.o PACE_Instrument.o Save_Ocean_Rad.o rtsos_rao_dg.o rt_single_scattering.o bessel.o rtspecfunc.o spher.o bfit.o deltafit.o aerosol_microphysical_model.o PACE_MIE_PHMX_Init.o main_PACE_Simulator_DoubleK.o
+OBJ=nrlib.o rttype_sos_rao_dg.o SnowBRDF.o RossLiBRDF.o surface_glint.o Atmosphere_Profile.o Gas_Absorption_CS_Readin.o MAP_Instrument.o PACE_Instrument.o Save_Ocean_Rad.o rtsos_rao_dg.o rt_single_scattering.o bessel.o rtspecfunc.o spher.o bfit.o deltafit.o aerosol_microphysical_model.o PACE_MIE_PHMX_Init.o main_PACE_Simulator_DoubleK.o
 
 F90=gfortran
 #F90=ifort
 
-FCFLAG_GAS = -O3
+#FCFLAG_GAS = -O3
 #FCFLAG_GAS = -g -fbounds-check
-#FCFLAG_GAS = -g
+FCFLAG_GAS = -g
 
-FCFLAG= -O3
+#FCFLAG= -O3
 #FCFLAG=-real-size 64 -O3
 
-#FCFLAG= -g -fbounds-check
+FCFLAG= -g -fbounds-check
 #FCFLAG= -g -fbounds-check -ffpe-trap=invalid,zero,overflow -fcheck=all
 #FCFLAG= -g -fbounds-check -ffpe-trap=invalid,zero,overflow -finit-real=nan -fcheck=all
 
@@ -40,6 +40,10 @@ nrlib.o: $(DIRCore)/nrlib.f90
 	 $(F90) -c $(FCFLAG) $(DIRCore)/nrlib.f90
 rttype_sos_rao_dg.o: $(DIRCore)/rttype_sos_rao_dg.f90
 	$(F90) -c $(FCFLAG) $(DIRCore)/rttype_sos_rao_dg.f90
+SnowBRDF.o:$(DIRCore)/SnowBRDF.f90
+	$(F90) -c $(FCFLAG) $(DIRCore)/SnowBRDF.f90
+RossLiBRDF.o:$(DIRCore)/RossLiBRDF.f90
+	$(F90) -c $(FCFLAG) $(DIRCore)/RossLiBRDF.f90
 surface_glint.o: $(DIRCore)/surface_glint.f90
 	$(F90) -c $(FCFLAG) $(DIRCore)/surface_glint.f90
 Atmosphere_Profile.o: $(DIRCore)/Atmosphere_Profile.f90
