@@ -93,6 +93,8 @@ call RossLi_Kernel_geo(COST1,PHI1,COST2,PHI2,BRDML_geo)
 BRDML(1,1)=fiso+fvol*BRDML_vol(1,1)+fgeo*BRDML_geo(1,1)
 BRDML(1,1)=BRDML(1,1)*abs(COST1)
 
+IF(BRDML(1,1)<0.0D0) STOP 'CHECK Ross-Li BRDF routine or coefficients'
+
 END SUBROUTINE pBRDM_RossLi
 
 END MODULE RossLiBRDF
