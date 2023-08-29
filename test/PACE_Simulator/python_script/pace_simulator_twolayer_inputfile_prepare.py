@@ -91,7 +91,15 @@ iaerosol=2
 #AeroFMF=random.random()
 AeroFMF=0.3
 
-#ocean_case_select=np.array([-1, 0, 1, 2, 3])
+#ocean_case_select=np.array([-203 -202, -201, -200, 0, 1, 2, 3])
+#                              !==-203 Ross Li Land Reflectance
+#                              !==-202 Snow Reflectance
+#                              !==-201 mRPV land Reflectance
+#                              !==-200 Land Lambertian Reflectance
+#                              !==0 no ocean water body
+#                              !==1 CASE 1 WATER IOPS
+#                              !==2 CASE 2 WATER IOPS
+#							  !==3 Bio-2 model in polarimeter fitting
 # -1 is land surface with albedo_ground defined below
 # 0: atmosphere bounded by ocean surface only
 ocean_case_select=np.array([0,1])
