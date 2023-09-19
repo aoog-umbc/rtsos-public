@@ -3,14 +3,14 @@ OBJ=nrlib.o rttype_sos_rao_dg.o SnowBRDF.o RossLiBRDF.o surface_glint.o Atmosphe
 F90=gfortran
 #F90=ifort
 
-#FCFLAG_GAS = -O3
+FCFLAG_GAS = -O3
 #FCFLAG_GAS = -g -fbounds-check
-FCFLAG_GAS = -g
+#FCFLAG_GAS = -g
 
-#FCFLAG= -O3
+FCFLAG= -O3
 #FCFLAG=-real-size 64 -O3
 
-FCFLAG= -g -fbounds-check
+#FCFLAG= -g -fbounds-check
 #FCFLAG= -g -fbounds-check -ffpe-trap=invalid,zero,overflow -fcheck=all
 #FCFLAG= -g -fbounds-check -ffpe-trap=invalid,zero,overflow -finit-real=nan -fcheck=all
 

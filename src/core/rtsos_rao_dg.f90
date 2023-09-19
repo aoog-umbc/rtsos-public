@@ -574,7 +574,7 @@ DO M=1,NREC
      pBRDFe=RTMP3
      NMBRE=RTMP4
      NMBIM=RTMP5
-     IF(NMBRE<=1.0d0 .or. NMBRE>2.0d0)stop 'check nmbre'
+     IF(NMBRE<=1.0d0 .or. NMBRE>2.0d0)stop 'check nmbre in pBRDF option'
   ENDIF
 
   IF(I== -202)THEN
@@ -587,6 +587,10 @@ DO M=1,NREC
      fiso=RTMP
      fvol=RTMP1
      fgeo=RTMP2
+     Bpol=RTMP3
+     NMBRE=RTMP4
+     NMBIM=RTMP5
+     IF(NMBRE<=1.0d0 .or. NMBRE>2.0d0)stop 'check nmbre in Ross-Li option'
   ENDIF
 
 ENDDO
