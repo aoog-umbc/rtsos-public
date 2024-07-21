@@ -1,4 +1,4 @@
-OBJ=nrlib.o rttype_sos_rao_dg.o SnowBRDF.o RossLiBRDF.o surface_glint.o Atmosphere_Profile.o Gas_Absorption_CS_Readin.o MAP_Instrument.o PACE_Instrument.o Save_Ocean_Rad.o rtsos_rao_dg.o rt_single_scattering.o bessel.o rtspecfunc.o spher.o bfit.o deltafit.o aerosol_microphysical_model.o PACE_MIE_PHMX_Init.o main_PACE_Simulator_DoubleK.o
+OBJ=nrlib.o rttype_sos_rao_dg.o emis_sea.o SnowBRDF.o RossLiBRDF.o surface_glint.o Atmosphere_Profile.o Gas_Absorption_CS_Readin.o MAP_Instrument.o PACE_Instrument.o Save_Ocean_Rad.o rtsos_rao_dg.o rt_single_scattering.o bessel.o rtspecfunc.o spher.o bfit.o deltafit.o aerosol_microphysical_model.o PACE_MIE_PHMX_Init.o main_PACE_Simulator_DoubleK.o
 
 F90=gfortran
 #F90=ifort
@@ -14,7 +14,7 @@ FCFLAG= -O3
 #FCFLAG= -g -fbounds-check -ffpe-trap=invalid,zero,overflow -fcheck=all
 #FCFLAG= -g -fbounds-check -ffpe-trap=invalid,zero,overflow -finit-real=nan -fcheck=all
 
-HDF5DIR =/opt/homebrew/Cellar/hdf5/1.14.3/
+HDF5DIR =/opt/homebrew/Caskroom/miniforge/base/
 HDF5LIB=-I$(HDF5DIR)/include
 H5FC=$(HDF5DIR)/bin/h5fc
 LIBSHDF= $(HDF5LIB) -L$(HDF5DIR)/lib/ -lhdf5 -lhdf5_fortran -lhdf5_hl_fortran
@@ -22,7 +22,7 @@ LIBSHDF= $(HDF5LIB) -L$(HDF5DIR)/lib/ -lhdf5 -lhdf5_fortran -lhdf5_hl_fortran
 # cocco options
 #HDF5INCLUDE=-I/usr/include/hdf5/serial/
 #HDF5LIB=/usr/lib/x86_64-linux-gnu/
-#LIBSHDF= $(HDF5INCLUDE) -L$(HDF5LIB) -lhdf5_serial -lhdf5_serial_fortran -lhdf5_hl_fortran
+#LIBSHDF= $(HDF5INCLUDE) -L$(HDF5LIB) -lhdf5_serial -lhdf5_serial_fortran -lhdf5hl_fortran
 #H5FC=h5fc
 
 # Taki options
@@ -40,6 +40,8 @@ nrlib.o: $(DIRCore)/nrlib.f90
 	 $(F90) -c $(FCFLAG) $(DIRCore)/nrlib.f90
 rttype_sos_rao_dg.o: $(DIRCore)/rttype_sos_rao_dg.f90
 	$(F90) -c $(FCFLAG) $(DIRCore)/rttype_sos_rao_dg.f90
+emis_sea.o:$(DIRCore)/emis_sea.f90
+	$(F90) -c $(FCFLAG) $(DIRCore)/emis_sea.f90
 SnowBRDF.o:$(DIRCore)/SnowBRDF.f90
 	$(F90) -c $(FCFLAG) $(DIRCore)/SnowBRDF.f90
 RossLiBRDF.o:$(DIRCore)/RossLiBRDF.f90

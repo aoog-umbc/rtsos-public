@@ -2089,17 +2089,10 @@ CALL h5dwrite_f(dset, H5T_NATIVE_REAL,f_ptr, hdferr)
 CALL h5dclose_f(dset, hdferr)
 CALL h5sclose_f(space, hdferr)
 
-IF(ILS_FLAG)THEN
-	dims= (/NUMMIEUSE,NWV_OUTPUT /)
-    c_dim_nwv=c_dim_nwv_output
-	ALLOCATE(HDF5RARR2DIM(NUMMIEUSE,NWV_OUTPUT))
-	HDF5RARR2DIM=MRR1_Save(1:NUMMIEUSE,NWV_START:NWV_END)
-ELSE
-	dims= (/NUMMIEUSE,NWV_BAND /)
-    c_dim_nwv=c_dim_nwv_band
-	ALLOCATE(HDF5RARR2DIM(NUMMIEUSE,NWV_BAND))
-	HDF5RARR2DIM=MRR1_Save(1:NUMMIEUSE,1:NWV_BAND)
-ENDIF
+dims= (/NUMMIEUSE,NWV_BAND /)
+c_dim_nwv=c_dim_nwv_band
+ALLOCATE(HDF5RARR2DIM(NUMMIEUSE,NWV_BAND))
+HDF5RARR2DIM=MRR1_Save(1:NUMMIEUSE,1:NWV_BAND)
 CALL h5screate_simple_f(2, dims, space, hdferr)
 CALL h5dcreate_f(file, 'Aerosol_Mrf', H5T_IEEE_F32LE, space, dset, hdferr)
 CALL h5dwrite_f(dset, H5T_NATIVE_REAL, C_LOC(HDF5RARR2DIM(1,1)), hdferr)
@@ -2109,17 +2102,11 @@ CALL h5dclose_f(dset, hdferr)
 CALL h5sclose_f(space, hdferr)
 DEALLOCATE(HDF5RARR2DIM)
 
-IF(ILS_FLAG)THEN
-	dims= (/NUMMIEUSE,NWV_OUTPUT /)
-	c_dim_nwv=c_dim_nwv_output
-	ALLOCATE(HDF5RARR2DIM(NUMMIEUSE,NWV_OUTPUT))
-	HDF5RARR2DIM=MRI1_Save(1:NUMMIEUSE,NWV_START:NWV_END)
-ELSE
-	dims= (/NUMMIEUSE,NWV_BAND /)
-	c_dim_nwv=c_dim_nwv_band
-	ALLOCATE(HDF5RARR2DIM(NUMMIEUSE,NWV_BAND))
-	HDF5RARR2DIM=MRI1_Save(1:NUMMIEUSE,1:NWV_BAND)
-ENDIF
+
+dims= (/NUMMIEUSE,NWV_BAND /)
+c_dim_nwv=c_dim_nwv_band
+ALLOCATE(HDF5RARR2DIM(NUMMIEUSE,NWV_BAND))
+HDF5RARR2DIM=MRI1_Save(1:NUMMIEUSE,1:NWV_BAND)
 CALL h5screate_simple_f(2, dims, space, hdferr)
 CALL h5dcreate_f(file, 'Aerosol_Mif', H5T_IEEE_F32LE, space, dset, hdferr)
 CALL h5dwrite_f(dset, H5T_NATIVE_REAL, C_LOC(HDF5RARR2DIM(1,1)), hdferr)
@@ -2129,17 +2116,11 @@ CALL h5dclose_f(dset, hdferr)
 CALL h5sclose_f(space, hdferr)
 DEALLOCATE(HDF5RARR2DIM)
 
-IF(ILS_FLAG)THEN
-	dims= (/NUMMIEUSE,NWV_OUTPUT /)
-	c_dim_nwv=c_dim_nwv_output
-	ALLOCATE(HDF5RARR2DIM(NUMMIEUSE,NWV_OUTPUT))
-	HDF5RARR2DIM=MRR2_Save(1:NUMMIEUSE,NWV_START:NWV_END)
-ELSE
-	dims= (/NUMMIEUSE,NWV_BAND /)
-	c_dim_nwv=c_dim_nwv_band
-	ALLOCATE(HDF5RARR2DIM(NUMMIEUSE,NWV_BAND))
-	HDF5RARR2DIM=MRR2_Save(1:NUMMIEUSE,1:NWV_BAND)
-ENDIF
+
+dims= (/NUMMIEUSE,NWV_BAND /)
+c_dim_nwv=c_dim_nwv_band
+ALLOCATE(HDF5RARR2DIM(NUMMIEUSE,NWV_BAND))
+HDF5RARR2DIM=MRR2_Save(1:NUMMIEUSE,1:NWV_BAND)
 CALL h5screate_simple_f(2, dims, space, hdferr)
 CALL h5dcreate_f(file, 'Aerosol_MrC', H5T_IEEE_F32LE, space, dset, hdferr)
 CALL h5dwrite_f(dset, H5T_NATIVE_REAL, C_LOC(HDF5RARR2DIM(1,1)), hdferr)
@@ -2149,17 +2130,10 @@ CALL h5dclose_f(dset, hdferr)
 CALL h5sclose_f(space, hdferr)
 DEALLOCATE(HDF5RARR2DIM)
 
-IF(ILS_FLAG)THEN
-	dims= (/NUMMIEUSE,NWV_OUTPUT /)
-	c_dim_nwv=c_dim_nwv_output
-	ALLOCATE(HDF5RARR2DIM(NUMMIEUSE,NWV_OUTPUT))
-	HDF5RARR2DIM=MRI2_Save(1:NUMMIEUSE,NWV_START:NWV_END)
-ELSE
-	dims= (/NUMMIEUSE,NWV_BAND /)
-	c_dim_nwv=c_dim_nwv_band
-	ALLOCATE(HDF5RARR2DIM(NUMMIEUSE,NWV_BAND))
-	HDF5RARR2DIM=MRI2_Save(1:NUMMIEUSE,1:NWV_BAND)
-ENDIF
+dims= (/NUMMIEUSE,NWV_BAND /)
+c_dim_nwv=c_dim_nwv_band
+ALLOCATE(HDF5RARR2DIM(NUMMIEUSE,NWV_BAND))
+HDF5RARR2DIM=MRI2_Save(1:NUMMIEUSE,1:NWV_BAND)
 CALL h5screate_simple_f(2, dims, space, hdferr)
 CALL h5dcreate_f(file, 'Aerosol_MiC', H5T_IEEE_F32LE, space, dset, hdferr)
 CALL h5dwrite_f(dset, H5T_NATIVE_REAL, C_LOC(HDF5RARR2DIM(1,1)), hdferr)
@@ -2169,17 +2143,10 @@ CALL h5dclose_f(dset, hdferr)
 CALL h5sclose_f(space, hdferr)
 DEALLOCATE(HDF5RARR2DIM)
 
-IF(ILS_FLAG)THEN
-	dimscl=(/ NWV_OUTPUT /)
-  c_dim_nwv=c_dim_nwv_output
-	ALLOCATE(HDF5RARR(NWV_OUTPUT))
-	HDF5RARR(1:NWV_OUTPUT)=MRR_NonSpherical(NWV_START:NWV_END)
-ELSE
-	dimscl=(/ NWV_BAND /)
-  c_dim_nwv=c_dim_nwv_band
-	ALLOCATE(HDF5RARR(NWV_BAND))
-	HDF5RARR(1:NWV_BAND)=MRR_NonSpherical(1:NWV_BAND)
-ENDIF
+dimscl=(/ NWV_BAND /)
+c_dim_nwv=c_dim_nwv_band
+ALLOCATE(HDF5RARR(NWV_BAND))
+HDF5RARR(1:NWV_BAND)=MRR_NonSpherical(1:NWV_BAND)
 CALL h5screate_simple_f(1, dimscl, space, hdferr)
 CALL h5dcreate_f(file, 'Aerosol_Mr_NONSPHERE', H5T_IEEE_F32LE, space, dset, hdferr)
 CALL h5dwrite_f(dset, H5T_NATIVE_REAL, C_LOC(HDF5RARR(1)), hdferr)
@@ -2188,17 +2155,11 @@ CALL h5dclose_f(dset, hdferr)
 CALL h5sclose_f(space, hdferr)
 DEALLOCATE(HDF5RARR)
 
-IF(ILS_FLAG)THEN
-	dimscl=(/ NWV_OUTPUT /)
-  c_dim_nwv=c_dim_nwv_output
-	ALLOCATE(HDF5RARR(NWV_OUTPUT))
-	HDF5RARR(1:NWV_OUTPUT)=MRI_NonSpherical(NWV_START:NWV_END)
-ELSE
-	dimscl=(/ NWV_BAND/)
-  c_dim_nwv=c_dim_nwv_band
-	ALLOCATE(HDF5RARR(NWV_BAND))
-	HDF5RARR(1:NWV_BAND)=MRI_NonSpherical(1:NWV_BAND)
-ENDIF
+
+dimscl=(/ NWV_BAND/)
+c_dim_nwv=c_dim_nwv_band
+ALLOCATE(HDF5RARR(NWV_BAND))
+HDF5RARR(1:NWV_BAND)=MRI_NonSpherical(1:NWV_BAND)
 CALL h5screate_simple_f(1, dimscl, space, hdferr)
 CALL h5dcreate_f(file, 'Aerosol_Mic_NONSPHERE', H5T_IEEE_F32LE, space, dset, hdferr)
 CALL h5dwrite_f(dset, H5T_NATIVE_REAL, C_LOC(HDF5RARR(1)), hdferr)
@@ -2213,17 +2174,10 @@ CALL h5dcreate_f(file, 'NTLYERA', H5T_NATIVE_INTEGER, space, c_dim_ntlyera, hdfe
 CALL h5dsset_scale_f(c_dim_ntlyera, hdferr, dim_not_var)
 CALL h5sclose_f(space, hdferr)
 
-IF(ILS_FLAG)THEN
-	dims= (/NWV_OUTPUT,NTLYERA /)
-  c_dim_nwv=c_dim_nwv_output
-	ALLOCATE(HDF5RARR2DIM(NWV_OUTPUT,NTLYERA ))
-	HDF5RARR2DIM=TAU_ARSL_Ext_AVG(NWV_START:NWV_END,1:NTLYERA)
-ELSE
-	dims= (/NWV_BAND,NTLYERA /)
-  c_dim_nwv=c_dim_nwv_band
-	ALLOCATE(HDF5RARR2DIM(NWV_BAND,NTLYERA ))
-	HDF5RARR2DIM=TAU_ARSL_Ext_AVG(1:NWV_BAND,1:NTLYERA)
-ENDIF
+dims= (/NWV_BAND,NTLYERA /)
+c_dim_nwv=c_dim_nwv_band
+ALLOCATE(HDF5RARR2DIM(NWV_BAND,NTLYERA ))
+HDF5RARR2DIM=TAU_ARSL_Ext_AVG(1:NWV_BAND,1:NTLYERA)
 CALL h5screate_simple_f(2, dims, space, hdferr)
 CALL h5dcreate_f(file, 'Tau_Aerosol_Extinction', H5T_IEEE_F32LE, space, dset, hdferr)
 CALL h5dwrite_f(dset, H5T_NATIVE_REAL, C_LOC(HDF5RARR2DIM(1,1)), hdferr)
@@ -2233,17 +2187,11 @@ CALL h5dclose_f(dset, hdferr)
 CALL h5sclose_f(space, hdferr)
 DEALLOCATE(HDF5RARR2DIM)
 
-IF(ILS_FLAG)THEN
-	dims= (/NWV_OUTPUT,NTLYERA /)
-  c_dim_nwv=c_dim_nwv_output
-	ALLOCATE(HDF5RARR2DIM(NWV_OUTPUT,NTLYERA ))
-	HDF5RARR2DIM=TAU_ARSL_Scat_AVG(NWV_START:NWV_END,1:NTLYERA)
-ELSE
-	dims= (/NWV_BAND,NTLYERA /)
-  c_dim_nwv=c_dim_nwv_band
-	ALLOCATE(HDF5RARR2DIM(NWV_BAND,NTLYERA ))
-	HDF5RARR2DIM=TAU_ARSL_Scat_AVG(1:NWV_BAND,1:NTLYERA)
-ENDIF
+
+dims= (/NWV_BAND,NTLYERA /)
+c_dim_nwv=c_dim_nwv_band
+ALLOCATE(HDF5RARR2DIM(NWV_BAND,NTLYERA ))
+HDF5RARR2DIM=TAU_ARSL_Scat_AVG(1:NWV_BAND,1:NTLYERA)
 CALL h5screate_simple_f(2, dims, space, hdferr)
 CALL h5dcreate_f(file, 'Tau_Aerosol_Scattering', H5T_IEEE_F32LE, space, dset, hdferr)
 CALL h5dwrite_f(dset, H5T_NATIVE_REAL, C_LOC(HDF5RARR2DIM(1,1)), hdferr)
@@ -2253,17 +2201,11 @@ CALL h5dclose_f(dset, hdferr)
 CALL h5sclose_f(space, hdferr)
 DEALLOCATE(HDF5RARR2DIM)
 
-IF(ILS_FLAG)THEN
-	dims= (/NWV_OUTPUT,NTLYERA /)
-  c_dim_nwv=c_dim_nwv_output
-	ALLOCATE(HDF5RARR2DIM(NWV_OUTPUT,NTLYERA ))
-	HDF5RARR2DIM=TAU_RAY_AVG(NWV_START:NWV_END,1:NTLYERA)
-ELSE
-	dims= (/NWV_BAND,NTLYERA /)
-  c_dim_nwv=c_dim_nwv_band
-	ALLOCATE(HDF5RARR2DIM(NWV_BAND,NTLYERA ))
-	HDF5RARR2DIM=TAU_RAY_AVG(1:NWV_BAND,1:NTLYERA)
-ENDIF
+
+dims= (/NWV_BAND,NTLYERA /)
+c_dim_nwv=c_dim_nwv_band
+ALLOCATE(HDF5RARR2DIM(NWV_BAND,NTLYERA ))
+HDF5RARR2DIM=TAU_RAY_AVG(1:NWV_BAND,1:NTLYERA)
 CALL h5screate_simple_f(2, dims, space, hdferr)
 CALL h5dcreate_f(file, 'Tau_Rayleigh_Extinction', H5T_IEEE_F32LE, space, dset, hdferr)
 CALL h5dwrite_f(dset, H5T_NATIVE_REAL, C_LOC(HDF5RARR2DIM(1,1)), hdferr)
@@ -2273,17 +2215,10 @@ CALL h5dclose_f(dset, hdferr)
 CALL h5sclose_f(space, hdferr)
 DEALLOCATE(HDF5RARR2DIM)
 
-IF(ILS_FLAG)THEN
-	dims= (/NWV_OUTPUT,NTLYERA /)
-  c_dim_nwv=c_dim_nwv_output
-	ALLOCATE(HDF5RARR2DIM(NWV_OUTPUT,NTLYERA ))
-	HDF5RARR2DIM=DEPOL_A_AVG(NWV_START:NWV_END,1:NTLYERA)
-ELSE
-	dims= (/NWV_BAND,NTLYERA /)
-  c_dim_nwv=c_dim_nwv_band
-	ALLOCATE(HDF5RARR2DIM(NWV_BAND,NTLYERA ))
-	HDF5RARR2DIM=DEPOL_A_AVG(1:NWV_BAND,1:NTLYERA)
-ENDIF
+dims= (/NWV_BAND,NTLYERA /)
+c_dim_nwv=c_dim_nwv_band
+ALLOCATE(HDF5RARR2DIM(NWV_BAND,NTLYERA ))
+HDF5RARR2DIM=DEPOL_A_AVG(1:NWV_BAND,1:NTLYERA)
 CALL h5screate_simple_f(2, dims, space, hdferr)
 CALL h5dcreate_f(file, 'Rayleigh_Depolization_Ratio', H5T_IEEE_F32LE, space, dset, hdferr)
 CALL h5dwrite_f(dset, H5T_NATIVE_REAL, C_LOC(HDF5RARR2DIM(1,1)), hdferr)
@@ -3443,6 +3378,8 @@ DO ITLYERA=1,NTLYERA
 
 ENDDO ! LAYER LOOP
 
+DEALLOCATE(TAURfrac,TAULYR,LBDOLYR)
+
 IF(ABSORPTION_TAU_REDUCE_FLAG)THEN
   RTMP=0.0D0
   DO ITLYERA =1,NTLYERA+1
@@ -3531,7 +3468,6 @@ IREC_SHFT=5
 RECDATASTREAM(NTLYERA+IREC_SHFT,1)=INDXDETECTOR
 RECDATASTREAM(NTLYERA+IREC_SHFT,2)=BLANK
 RECDATASTREAM(NTLYERA+IREC_SHFT,3)=BLANK
-DEALLOCATE(TAURfrac,TAULYR,LBDOLYR)
 
 EMISSION_FLAG=(Indx_Inelastic_Scattering == 0) .OR. &
               (Indx_Inelastic_Scattering == 2) .OR. &
