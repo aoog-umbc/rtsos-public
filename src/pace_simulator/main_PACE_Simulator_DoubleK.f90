@@ -364,7 +364,7 @@ INTEGER:: IAEROSOL
 !-1 Ahmad model with flexbile RH and FMF;
 !1-10 is Shettle and Fenn,
 !11-20 is Ahmad model
-
+LOGICAL :: WAVETABLESAVEFLAG,FLAG1=.FALSE.
 LOGICAL :: file_e
 integer time_array_0(8), time_array_1(8)
 real start_time, finish_time
@@ -982,6 +982,7 @@ ALLOCATE(WAVELENGTH_Table_Save(NWV_BAND_CAL), &
 		 TAU_ARSL_Scat_Save(NWV_BAND_CAL,NTLYERA),&
 		 TAU_RAY_Save(NWV_BAND_CAL,NTLYERA),&
 		 DEPOL_A_Save(NWV_BAND_CAL,NTLYERA))
+WAVELENGTH_Table_Save=0.0D0
 
 ALLOCATE(XK(NILS_PACE),YK(NILS_PACE))
 
@@ -1142,6 +1143,8 @@ DO IWV_BAND=NWV_BAND_START,NWV_BAND_END
            DSTOKESTMP(1:NDET,1:NWV_SUB_CAL,1:NTHETAOUT,1:NPHIOUT,1:4))
 
   DO IWV_CAL=1,NWV_SUB_CAL
+        IF(IWV_CAL==1) WAVETABLESAVEFLAG=.TRUE.
+
         write(*,'("SUB WAVELENGTH INFO",I4,2x,E12.6,2x,E12.6)')IWV_CAL,WV(INDX_WV_CAL(IWV_CAL)),&
                               TAU_TG_DK(INDX_WV_CAL(IWV_CAL)-IWV_SUB_START+1)
         WAVELENGTH_NANOMETER=WV(INDX_WV_CAL(IWV_CAL))
@@ -1191,13 +1194,17 @@ DO IWV_BAND=NWV_BAND_START,NWV_BAND_END
            NTLYER,NUMMIERT,MAXLORDINPUT,NUMMIEANGINPUT,PHMXDATASTREAM,LBDO_LD,FLAM,CHLa,&
            TEMPERTURE,SALINITY,pBRDFa_input,pBRDFk_input,pBRDFb_input,pBRDFe_input)
 
-		IF(IWV_CAL==1)THEN
+       IF(IWV_BAND>1)FLAG1=ABS(WAVELENGTH_Table_Save(IWV_BAND-NWV_BAND_START)-WV(INDX_WV_CAL(IWV_CAL)))>1.0D-4
+        
+		IF((NWV_SUB_CAL==1) .OR. (FLAG1 .AND.WAVETABLESAVEFLAG))THEN
+            WAVETABLESAVEFLAG=.FALSE.
 			WAVELENGTH_Table_Save(IWV_BAND-NWV_BAND_START+1)=WV(INDX_WV_CAL(IWV_CAL))
 			TAU_RAY_Save(IWV_BAND-NWV_BAND_START+1,:)=TAUR(:)
 			DEPOL_A_Save(IWV_BAND-NWV_BAND_START+1,:)=DEPOL_A(:)
 			TAU_ARSL_Ext_Save(IWV_BAND-NWV_BAND_START+1,:)=TAU_ARSL_Ext_TMP(:)
 			TAU_ARSL_Scat_Save(IWV_BAND-NWV_BAND_START+1,:)=TAU_ARSL_Scat_TMP(:)
 		ENDIF
+
         call date_and_time(values=time_array_1)
               finish_time = time_array_1 (5) * 3600 + time_array_1 (6) * 60 &
                    + time_array_1 (7) + 0.001 * time_array_1 (8)
