@@ -9308,67 +9308,34 @@ IMPLICIT NONE
 INTEGER :: IMIE,ITHETA,ILTERM
 
 REAL*8 :: RTMP
-REAL*8,DIMENSION(:,:),ALLOCATABLE :: PLNML
-REAL*8,DIMENSION(:),ALLOCATABLE :: TWOX,F1TMP,F2TMP,DTMP,WTANG,PLNMLtmp
 
+integer::numanglocal
+integer::numordfull_local
+real*8,dimension(:),allocatable::muang,p11
+real*8,dimension(:),allocatable::fullbetal_local
 
 FULLBETAL=0.0D0
 
 DO IMIE=1,NUMMIE
-  ALLOCATE(PLNML(2,NUMMIEANG(IMIE)),TWOX(NUMMIEANG(IMIE)),&
-           F1TMP(NUMMIEANG(IMIE)), F2TMP(NUMMIEANG(IMIE)),&
-           DTMP(NUMMIEANG(IMIE)),WTANG(NUMMIEANG(IMIE)), &
-           PLNMLtmp(NUMMIEANG(IMIE)))
 
-  DO ITHETA=1,NUMMIEANG(IMIE)
-      IF(ITHETA==1)THEN
-        WTANG(ITHETA)=0.5D0*ABS(MU_SNG(IMIE,ITHETA)-MU_SNG(IMIE,ITHETA+1))
-      ELSEIF(ITHETA==NUMMIEANG(IMIE))THEN
-        WTANG(ITHETA)=0.5D0*ABS(MU_SNG(IMIE,ITHETA)-MU_SNG(IMIE,ITHETA-1))
-      ELSE
-        WTANG(ITHETA)=0.5D0*ABS(MU_SNG(IMIE,ITHETA+1)-MU_SNG(IMIE,ITHETA-1))
-      ENDIF 
-  ENDDO
-  
-  PLNML=0.0D0
-  PLNML(1,1:NUMMIEANG(IMIE))=1.0D0
-  PLNML(2,1:NUMMIEANG(IMIE))=MU_SNG(IMIE,1:NUMMIEANG(IMIE))
+	numanglocal=NUMMIEANG(IMIE)
+	allocate(muang(numanglocal),p11(numanglocal))
+	allocate(fullbetal_local(0:MAXLFULL))
 
-  DO ILTERM=0,1
-    FULLBETAL(IMIE,ILTERM)=FULLBETAL(IMIE,ILTERM) + &
-         0.5D0*SUM(PLNML(ILTERM+1,1:NUMMIEANG(IMIE))*      &
-        PM_AO_SNG(IMIE,1:NUMMIEANG(IMIE))%PHMX(1,1)*WTANG(1:NUMMIEANG(IMIE)))
-  ENDDO
+    do itheta=1,numanglocal
+		  muang(itheta)=MU_SNG(IMIE,itheta)
+		  p11(itheta)=PM_AO_SNG(IMIE,itheta)%PHMX(1,1)
+    enddo
+    call FULLBETAL_MONO(numanglocal,muang,p11,numordfull_local,MAXLFULL,fullbetal_local)
 
-  ILTERM=2
-  TWOX=2.0D0*MU_SNG(IMIE,1:NUMMIEANG(IMIE))
-  F2TMP=MU_SNG(IMIE,1:NUMMIEANG(IMIE))
-  DTMP=1.0D0
-  DO WHILE (ILTERM<MAXLFULL)
-     F1TMP=DTMP
-     F2TMP=F2TMP+TWOX
-     DTMP=DTMP+1.0D0
-     PLNMLtmp(1:NUMMIEANG(IMIE))=PLNML(2,1:NUMMIEANG(IMIE))
-     PLNML(2,1:NUMMIEANG(IMIE))=(F2TMP*PLNML(2,1:NUMMIEANG(IMIE))  -   &
-                                 F1TMP*PLNML(1,1:NUMMIEANG(IMIE)))/DTMP
-     PLNML(1,1:NUMMIEANG(IMIE))=PLNMLtmp(1:NUMMIEANG(IMIE))
-     FULLBETAL(IMIE,ILTERM)=FULLBETAL(IMIE,ILTERM) +  &
-           0.5D0*SUM(PLNML(2,1:NUMMIEANG(IMIE))*      &
-           PM_AO_SNG(IMIE,1:NUMMIEANG(IMIE))%PHMX(1,1)*WTANG(1:NUMMIEANG(IMIE)))
+	NUMORDFULLBETAL(IMIE)=numordfull_local
 
-     ILTERM=ILTERM+1
-     IF(abs(FULLBETAL(IMIE,ILTERM))<1.0D-6 &
-          .AND. abs(FULLBETAL(IMIE,ILTERM-1))<1.0D-6) EXIT
-  ENDDO
-!  IF(ILTERM>=MAXLFULL) THEN
-!     WRITE(*,*)'MAXLFULL MAY NOT BE ENOUGH, INCREASE MAXLFULL'
-!     WRITE(*,*)'MIENUM(',IMIE,')','BETAL=',FULLBETAL(IMIE,ILTERM-1)
-!  ENDIF
-  NUMORDFULLBETAL(IMIE)=ILTERM
+   DO ILTERM=0,numordfull_local
+     FULLBETAL(IMIE,ILTERM)=fullbetal_local(ILTERM)
+   ENDDO
 
-  DEALLOCATE(PLNML,TWOX,F1TMP,F2TMP,DTMP,WTANG,PLNMLtmp)
-  FULLBETAL(IMIE,0:NUMORDFULLBETAL(IMIE))=FULLBETAL(IMIE,0:NUMORDFULLBETAL(IMIE))/&
-                                     FULLBETAL(IMIE,0)
+   deallocate(muang,p11,fullbetal_local)
+
 ENDDO
 
 !testing
@@ -9377,10 +9344,80 @@ ENDDO
 !enddo
 IF(MAXLORD>MAXVAL(NUMORDFULLBETAL))THEN
   MAXLORD=MAXVAL(NUMORDFULLBETAL)
-  MAXMORD=MAXLORD
+!  MAXMORD=MAXLORD
 ENDIF
 
 END SUBROUTINE FULLBETAL_INIT
+
+SUBROUTINE FULLBETAL_MONO(numanglocal,muang,p11,numordfull_local,maxlfull,fullbetal_local)
+USE RTTYPE,ONLY : FACTOR
+IMPLICIT NONE
+integer,intent(in)::numanglocal,maxlfull
+integer,intent(out)::numordfull_local
+real*8,dimension(numanglocal),intent(in)::muang,p11
+real*8,dimension(0:maxlfull),intent(out)::fullbetal_local
+
+INTEGER :: ITHETA,ILTERM
+
+REAL*8 :: RTMP
+REAL*8,DIMENSION(:,:),ALLOCATABLE :: PLNML
+REAL*8,DIMENSION(:),ALLOCATABLE :: TWOX,F1TMP,F2TMP,DTMP,WTANG,PLNMLtmp
+
+
+fullbetal_local=0.0D0
+
+ALLOCATE(PLNML(2,numanglocal),TWOX(numanglocal),&
+	   F1TMP(numanglocal), F2TMP(numanglocal),&
+	   DTMP(numanglocal),WTANG(numanglocal), &
+	   PLNMLtmp(numanglocal))
+
+DO ITHETA=1,numanglocal
+  IF(ITHETA==1)THEN
+	WTANG(ITHETA)=0.5D0*ABS(muang(ITHETA)-muang(ITHETA+1))
+  ELSEIF(ITHETA==numanglocal)THEN
+	WTANG(ITHETA)=0.5D0*ABS(muang(ITHETA)-muang(ITHETA-1))
+  ELSE
+	WTANG(ITHETA)=0.5D0*ABS(muang(ITHETA+1)-muang(ITHETA-1))
+  ENDIF
+ENDDO
+
+PLNML=0.0D0
+PLNML(1,1:numanglocal)=1.0D0
+PLNML(2,1:numanglocal)=muang(1:numanglocal)
+
+DO ILTERM=0,1
+fullbetal_local(ILTERM)=fullbetal_local(ILTERM) + &
+	 0.5D0*SUM(PLNML(ILTERM+1,1:numanglocal)*      &
+            	p11(1:numanglocal)*WTANG(1:numanglocal))
+ENDDO
+
+ILTERM=2
+TWOX=2.0D0*muang(1:numanglocal)
+F2TMP=muang(1:numanglocal)
+DTMP=1.0D0
+DO WHILE (ILTERM<MAXLFULL)
+ F1TMP=DTMP
+ F2TMP=F2TMP+TWOX
+ DTMP=DTMP+1.0D0
+ PLNMLtmp(1:numanglocal)=PLNML(2,1:numanglocal)
+ PLNML(2,1:numanglocal)=(F2TMP*PLNML(2,1:numanglocal)  -   &
+							 F1TMP*PLNML(1,1:numanglocal))/DTMP
+ PLNML(1,1:numanglocal)=PLNMLtmp(1:numanglocal)
+ fullbetal_local(ILTERM)=fullbetal_local(ILTERM) +  &
+	   0.5D0*SUM(PLNML(2,1:numanglocal)*      &
+	   p11(1:numanglocal)*WTANG(1:numanglocal))
+
+ ILTERM=ILTERM+1
+ IF(abs(fullbetal_local(ILTERM))<1.0D-6 &
+	  .AND. abs(fullbetal_local(ILTERM-1))<1.0D-6) EXIT
+ENDDO
+numordfull_local=ILTERM
+
+DEALLOCATE(PLNML,TWOX,F1TMP,F2TMP,DTMP,WTANG,PLNMLtmp)
+fullbetal_local(0:numordfull_local)=fullbetal_local(0:numordfull_local)/&
+										 fullbetal_local(0)
+
+END SUBROUTINE FULLBETAL_MONO
 
 SUBROUTINE MUOUTSHUFFLE(NTHETAOUT,MUOUT,NMUOUTSHFLA,MUOUTSHFLA,&
                         NMUOUTSHFLO,MUOUTSHFLO)
