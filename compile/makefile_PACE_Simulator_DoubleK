@@ -9,7 +9,6 @@ FCFLAG_GAS = -O3
 
 FCFLAG= -O3
 #FCFLAG=-real-size 64 -O3
-
 #FCFLAG= -g -fbounds-check
 #FCFLAG= -g -fbounds-check -ffpe-trap=invalid,zero,overflow -fcheck=all
 #FCFLAG= -g -fbounds-check -ffpe-trap=invalid,zero,overflow -finit-real=nan -fcheck=all
