@@ -1,12 +1,12 @@
-OBJ=nrlib.o rttype_sos_rao_dg.o emis_sea.o SnowBRDF.o RossLiBRDF.o surface_glint.o Save_Ocean_Rad.o bfit.o rtsos_rao_dg.o bessel.o rtspecfunc.o deltafit.o main.o
+OBJ=mathlib.o rttype_sos_rao_dg.o emis_sea.o SnowBRDF.o RossLiBRDF.o surface_glint.o Save_Ocean_Rad.o bfit.o rtsos_rao_dg.o bessel.o rtspecfunc.o deltafit.o main.o
 
 #F90=pgf90
 F90=gfortran
 #F90=ifort
-#FCFLAG= -g
-#FCFLAG=-real-size 64 -O3
-#FCFLAG=-O3
-FCFLAG= -g -fbounds-check -ffpe-trap=invalid,zero,overflow -fbacktrace -finit-real=nan
+#FCFLAG= -g  -llapack -lblas
+#FCFLAG=-real-size 64 -O3  -llapack -lblas
+#FCFLAG=-O3 -llapack -lblas
+FCFLAG= -g  -llapack -lblas -fbounds-check -ffpe-trap=invalid,zero,overflow -fbacktrace -finit-real=nan
 
 #HDF5DIR = /usr/local/hdf5-1.8.13
 #HDF5LIB=-I$(HDF5DIR)/include
@@ -18,8 +18,8 @@ DIRMain=../src/main_program_monochromatic/
 
 rtsos_rao_dg.exe: $(OBJ)
 	$(F90) -o rtsos_rao_dg.exe $(FCFLAG) $(OBJ) $(LIBSHDF)
-nrlib.o:$(DIRCore)/nrlib.f90
-	$(F90) -c $(FCFLAG) $(DIRCore)/nrlib.f90
+mathlib.o:$(DIRCore)/mathlib.f90
+	$(F90) -c $(FCFLAG) $(DIRCore)/mathlib.f90
 rttype_sos_rao_dg.o: $(DIRCore)/rttype_sos_rao_dg.f90
 	$(F90) -c $(FCFLAG) $(DIRCore)/rttype_sos_rao_dg.f90
 emis_sea.o:$(DIRCore)/emis_sea.f90

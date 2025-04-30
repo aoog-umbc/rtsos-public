@@ -1,4 +1,4 @@
-OBJ=spher.o	nrlib.o aerosol_microphysical_model.o	MAP_Instrument.o PACE_Instrument.o  read_dust_data.o Mie_PHMX_Cal.o	 main_aerosol_phmx_cal.o
+OBJ=spher.o	mathlib.o aerosol_microphysical_model.o	MAP_Instrument.o PACE_Instrument.o  read_dust_data.o Mie_PHMX_Cal.o	 main_aerosol_phmx_cal.o
 
 F90=gfortran
 FCFLAG= -O3
@@ -34,8 +34,8 @@ Aerosol_Phmx_Cal.exe: $(OBJ)
 
 spher.o: $(DIR_Core)/spher.f
 	$(F90) -c $(FCFLAG) $(DIR_Core)/spher.f
-nrlib.o:$(DIR_Core)/nrlib.f90
-	$(F90) -c $(FCFLAG) $(DIR_Core)/nrlib.f90
+mathlib.o:$(DIR_Core)/mathlib.f90
+	$(F90) -c $(FCFLAG) $(DIR_Core)/mathlib.f90
 aerosol_microphysical_model.o: $(DIR_Core)/aerosol_microphysical_model.f90
 	$(F90) -c $(FCFLAG) $(DIR_Core)/aerosol_microphysical_model.f90
 MAP_Instrument.o: $(DIR_PS)/MAP_Instrument.f90

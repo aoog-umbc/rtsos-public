@@ -14,32 +14,32 @@
 
 !c  Output:  
 !c   pmom    the regular moments which DISORT needs for PMOM
-!c           (real*8 number starting at dimension0, 
+!c           (DOUBLE PRECISION number starting at dimension0, 
 !c           1-d vector with length 0:300) 
 !c                            -------------
 !c   pfitdm  the fitted "moments" which DISORT needs for PMOM
-!c           (real*8 number starting at dimension0,
+!c           (DOUBLE PRECISION number starting at dimension0,
 !c           1-d vector with length 0:300) 
 !c                            -------------
 !c   pfit and ftrunc    in case you do not use disort, this is  
 !c           the "moments" from the delta-fit after delta-truncation 
 !c           with truncation factor ftrunc
-!c 	    (ftrunc: real*8)
-!c           (pfit: real*8 number starting at dimension0, 
+!c 	    (ftrunc: DOUBLE PRECISION)
+!c           (pfit: DOUBLE PRECISION number starting at dimension0, 
 !c           1-d vector with length 0:300) 
 !c    ftrunc: traunction factor
 !c----------------------------------------------------------------------------
 MODULE BFIT_PARAMETERS
 INTEGER,PARAMETER ::NQUAD_REGION1=1000,NQUAD_REGION2=1000,&
                  NQUAD_TOTAL=NQUAD_REGION1+NQUAD_REGION2
-REAL*8,PARAMETER :: pi=3.141592653589793238462643383279502884197d0
-real*8,dimension(NQUAD_REGION1):: x1,w1,y1
-real*8,dimension(NQUAD_REGION2):: x2,w2,y2
-real*8,dimension(NQUAD_TOTAL):: x,w,xx,y,ysig
+DOUBLE PRECISION,PARAMETER :: pi=3.141592653589793238462643383279502884197d0
+DOUBLE PRECISION,dimension(NQUAD_REGION1):: x1,w1,y1
+DOUBLE PRECISION,dimension(NQUAD_REGION2):: x2,w2,y2
+DOUBLE PRECISION,dimension(NQUAD_TOTAL):: x,w,xx,y,ysig
 
 CONTAINS
 SUBROUTINE BFIT_QUAD_SETUP(angtrun)
-REAL*8 :: angtrun
+DOUBLE PRECISION :: angtrun
 call gauleg(angtrun,1.0d0,x1,w1,NQUAD_REGION1/2)
 call gauleg(0.0d0,angtrun,x2,w2,NQUAD_REGION2/2)
 do i=1,NQUAD_REGION1/2
@@ -69,12 +69,12 @@ END MODULE BFIT_PARAMETERS
     implicit none
 !	character*80 fn	
     integer :: nstr, NN, i,j
-    real*8,dimension(0:NSTR):: pmom,pfit,pfitdm
-    real*8,dimension(1:NN):: ang,phs
+    DOUBLE PRECISION,dimension(0:NSTR):: pmom,pfit,pfitdm
+    DOUBLE PRECISION,dimension(1:NN):: ang,phs
 
     integer :: deltam,deltamlocal
-    real*8 :: angtrun,ftrunc,ctrunc,sigma_sq
-    real*8 :: POLINT_SIMPLE
+    DOUBLE PRECISION :: angtrun,ftrunc,ctrunc,sigma_sq
+    DOUBLE PRECISION :: Func_UVIP3P
     deltamlocal=deltam
 !ccc   ang are in degrees (Theta), not cos(Theta)
 
@@ -90,7 +90,7 @@ END MODULE BFIT_PARAMETERS
 ! 	call myspline(NN,ang,phs,NQUAD_TOTAL,xx,y)
 ! or use LINEAR INTERPOLATION
 	do i=1,NQUAD_TOTAL
-      y(i)=POLINT_SIMPLE(NN,ang,phs,xx(i),2)
+      y(i)=Func_UVIP3P(NN,ang,phs,xx(i),2)
     enddo
 
 !ccc  compute the moments
@@ -162,10 +162,10 @@ END MODULE BFIT_PARAMETERS
     USE BFIT_PARAMETERS
     implicit none
 	integer intflag,nstr, NN, i
-    real*8,dimension(0:NSTR):: pmom,pfit,pfitdm
-    real*8,dimension(1:NN):: ang,phs,phssig
-    real*8 POLINT_SIMPLE
-    real*8 :: angtrun
+    DOUBLE PRECISION,dimension(0:NSTR):: pmom,pfit,pfitdm
+    DOUBLE PRECISION,dimension(1:NN):: ang,phs,phssig
+    DOUBLE PRECISION Func_UVIP3P
+    DOUBLE PRECISION :: angtrun
     integer :: DELTAM
 !ccc   ang are in degrees (Theta), not cos(Theta)
 
@@ -181,8 +181,8 @@ END MODULE BFIT_PARAMETERS
 !    call myspline(NN,ang,phssig,NQUAD_TOTAL,xx,ysig)
 ! or use LINEAR INTERPOLATION
     do i=1,NQUAD_TOTAL
-      y(i)=POLINT_SIMPLE(NN,ang,phs,xx(i),2)
-      ysig(i)=POLINT_SIMPLE(NN,ang,phssig,xx(i),2)
+      y(i)=Func_UVIP3P(NN,ang,phs,xx(i),2)
+      ysig(i)=Func_UVIP3P(NN,ang,phssig,xx(i),2)
     enddo
 
 !ccc  in case you want to compare interpolated phs with the true phs
@@ -216,36 +216,41 @@ USE BFIT_PARAMETERS
 implicit none
 integer intflag,nstr,ndata,ma, i, j, k, l, nkp
 
-real*8,dimension(0:nstr):: pmom,pfitdm
+DOUBLE PRECISION,dimension(0:nstr):: pmom,pfitdm
 
-real*8 ABSDIFF,tmp,cor
+DOUBLE PRECISION ABSDIFF,tmp,cor
 
-real*8,DIMENSION(:),ALLOCATABLE :: pl,dl00,&
+DOUBLE PRECISION,DIMENSION(:),ALLOCATABLE :: pl,dl00,&
                     dl20,dl2p2,dl2n2,b,a
-real*8,DIMENSION(:,:),ALLOCATABLE :: apl,u
+DOUBLE PRECISION,DIMENSION(:,:),ALLOCATABLE :: apl,u
+
+! DGELSD definitions
+INTEGER          Mrow, Ncolu, NRHS
+INTEGER          LDA, LDB,NLVL
+INTEGER,PARAMETER :: LWMAX=10000,SMALLSIZE=25
+
+!     .. Local Scalars ..
+INTEGER          INFO, LWORK, RANK
+DOUBLE PRECISION RCOND
+!     IWORK dimension should be at least 3*MIN(Mrow,Ncolu)*NLVL + 11*MIN(Mrow,Ncolu),
+!     where NLVL = MAX( 0, INT( LOG_2( MIN(Mrow,Ncolu)/(SMALLSIZE+1) ) )+1 )
+!     and SMALLSIZE = 25
+INTEGER,allocatable,dimension(:) :: IWORK !( 3*Mrow*0+11*Mrow )
+DOUBLE PRECISION,ALLOCATABLE,dimension(:,:) :: AMATR, BVEC
+DOUBLE PRECISION,ALLOCATABLE,dimension(:) :: SMATR
+DOUBLE PRECISION :: WORK(LWMAX)
+
 
 INTERFACE
 SUBROUTINE GETDMLlocal(XJ,NUMLORD,DL00,DL20,DL2P2,DL2N2)
 IMPLICIT NONE
 
-real*8, INTENT(IN) ::XJ
+DOUBLE PRECISION, INTENT(IN) ::XJ
 INTEGER, INTENT(IN) ::NUMLORD
-real*8,INTENT(OUT),DIMENSION(0:NUMLORD)::DL00,DL20,DL2P2,DL2N2
+DOUBLE PRECISION,INTENT(OUT),DIMENSION(0:NUMLORD)::DL00,DL20,DL2P2,DL2N2
 
 END SUBROUTINE GETDMLlocal
 END INTERFACE
-
-INTERFACE
-	SUBROUTINE gsh_svdfit(a,u,b,chisq)
-	USE nrtype; USE nrutil, ONLY : assert_eq,vabs
-	USE nr, ONLY : svbksb,svdcmp
-	IMPLICIT NONE
-	REAL(DP), DIMENSION(:), INTENT(OUT) :: a
-	REAL(DP), DIMENSION(:), INTENT(IN) :: b
-	REAL(DP), DIMENSION(:,:), INTENT(IN) :: u
-	REAL(DP), INTENT(OUT) :: chisq
-      END SUBROUTINE gsh_svdfit
-ENDINTERFACE
 
 ! specify variance for different angles
 ! forward directions are set with larger variance.
@@ -258,6 +263,16 @@ ENDINTERFACE
 !    ysig(i)=1.0d6
 ! endif
 !enddo
+Mrow=NQUAD_TOTAL
+Ncolu=nstr+1
+LDA = Mrow
+LDB = max(1,Mrow,Ncolu)
+NRHS=1
+RCOND = -1.0
+NLVL= MAX( 0, INT( LOG( MIN(Mrow,Ncolu)/(SMALLSIZE+1.0D0) )/LOG(2.0D0) )+1 )
+
+ALLOCATE(IWORK(3*MIN(Mrow,Ncolu)*NLVL + 11*MIN(Mrow,Ncolu)))
+ALLOCATE(AMATR(LDA,Ncolu),BVEC(LDB,NRHS),SMATR(Mrow))
 
 allocate(u(NQUAD_TOTAL,nstr+1),b(NQUAD_TOTAL),a(nstr+1),pl(nstr+1),apl(0:nstr,NQUAD_TOTAL),&
          dl00(0:nstr+1),dl20(0:nstr+1),dl2p2(0:nstr+1),dl2n2(0:nstr+1))
@@ -304,8 +319,23 @@ enddo
 
 !ccc  singular value decomposition fitting to derive b
 
-!    call svdfit(ndata,a,ma,u,b,cor)
-    call gsh_svdfit(a,u,b,cor)
+AMATR=u
+BVEC=0.0d0
+BVEC(1:Mrow,1)=b(1:Mrow)
+
+LWORK = -1
+CALL DGELSD( Mrow, Ncolu, NRHS, AMATR, LDA, BVEC, LDB, SMATR, RCOND, RANK, WORK, &
+             LWORK, IWORK, INFO )
+LWORK = MIN( LWMAX, INT( WORK( 1 ) ) )
+
+CALL DGELSD( Mrow, Ncolu, NRHS, AMATR, LDA, BVEC, LDB, SMATR, RCOND, RANK, WORK, &
+			 LWORK, IWORK, INFO )
+a(1:Ncolu)=BVEC(1:Ncolu,1)
+
+!write(*,*)'testing dgelsd,Mrow,Ncolu,LWORK=',Mrow,Ncolu,LWORK,a(1:Ncolu)
+
+IF( INFO.GT.0 ) STOP 'The LAPACK SVD failed to converge;'
+
 
     if(intflag==4)then
 	  do i=0,nstr
@@ -323,19 +353,21 @@ enddo
 !      return
     endif
 deallocate(pl,dl00,dl20,dl2p2,dl2n2,b,a,apl,u)
+DEALLOCATE(IWORK,AMATR,BVEC,SMATR)
+
 end
 
 
  	subroutine calmom_ger(intflag,nstr,pmom,DELTAM)
     USE BFIT_PARAMETERS
 
-    real*8,dimension(0:nstr) :: pmom
+    DOUBLE PRECISION,dimension(0:nstr) :: pmom
 
 	integer intflag,nstr,DELTAM
     integer :: i, j, k
-    real*8 :: ftrunc,sigma_sq,ctrunc
-    real*8,DIMENSION(:),ALLOCATABLE :: pl,dl00,dl20,dl2p2,dl2n2
-    real*8,DIMENSION(:,:),ALLOCATABLE :: apl
+    DOUBLE PRECISION :: ftrunc,sigma_sq,ctrunc
+    DOUBLE PRECISION,DIMENSION(:),ALLOCATABLE :: pl,dl00,dl20,dl2p2,dl2n2
+    DOUBLE PRECISION,DIMENSION(:,:),ALLOCATABLE :: apl
 
 	allocate(pl(nstr+1),apl(0:nstr,NQUAD_TOTAL), dl00(0:nstr+1),&
                dl20(0:nstr+1),dl2p2(0:nstr+1),dl2n2(0:nstr+1))
@@ -374,30 +406,45 @@ end
 	deallocate(pl,apl,dl00,dl20,dl2p2,dl2n2)
 	return
 
-	end
+	end subroutine calmom_ger
 
 !  GENERLIZED WIGNER D FIT OVER
 
 	subroutine calfit(nstr,pmom,pfitdm)
     USE BFIT_PARAMETERS
     integer nstr,ndata,ma, i, j, k, l, nkp
-    real*8,dimension(0:nstr):: pmom,pfitdm
-    real*8,DIMENSION(:),ALLOCATABLE :: b,a,pl
-    real*8,DIMENSION(:,:),ALLOCATABLE ::u,apl
-    real*8 cor
-	real*8 xpol(2),ypol(2),ytmp(NQUAD_TOTAL),tmp,dytmp
+    DOUBLE PRECISION,dimension(0:nstr):: pmom,pfitdm
+    DOUBLE PRECISION,DIMENSION(:),ALLOCATABLE :: b,a,pl
+    DOUBLE PRECISION,DIMENSION(:,:),ALLOCATABLE ::u,apl
+    DOUBLE PRECISION cor
+	DOUBLE PRECISION xpol(2),ypol(2),ytmp(NQUAD_TOTAL),tmp,dytmp
 
-    INTERFACE
-	SUBROUTINE gsh_svdfit(a,u,b,chisq)
-	  USE nrtype; USE nrutil, ONLY : assert_eq,vabs
-	  USE nr, ONLY : svbksb,svdcmp
-	  IMPLICIT NONE
-	  REAL(DP), DIMENSION(:), INTENT(OUT) :: a
-	  REAL(DP), DIMENSION(:), INTENT(IN) :: b
-	  REAL(DP), DIMENSION(:,:), INTENT(IN) :: u
-	  REAL(DP), INTENT(OUT) :: chisq
-      END SUBROUTINE gsh_svdfit
-    ENDINTERFACE
+! DGELSD definitions
+INTEGER          Mrow, Ncolu, NRHS
+INTEGER          LDA, LDB,NLVL
+INTEGER,PARAMETER :: LWMAX=10000,SMALLSIZE=25
+
+!     .. Local Scalars ..
+INTEGER          INFO, LWORK, RANK
+DOUBLE PRECISION RCOND
+!     IWORK dimension should be at least 3*MIN(Mrow,Ncolu)*NLVL + 11*MIN(Mrow,Ncolu),
+!     where NLVL = MAX( 0, INT( LOG_2( MIN(Mrow,Ncolu)/(SMALLSIZE+1) ) )+1 )
+!     and SMALLSIZE = 25
+INTEGER,allocatable,dimension(:) :: IWORK !( 3*Mrow*0+11*Mrow )
+DOUBLE PRECISION,ALLOCATABLE,dimension(:,:) :: AMATR, BVEC
+DOUBLE PRECISION,ALLOCATABLE,dimension(:) :: SMATR
+DOUBLE PRECISION :: WORK(LWMAX)
+
+Mrow=NQUAD_TOTAL
+Ncolu=nstr+1
+LDA = Mrow
+LDB = max(1,Mrow,Ncolu)
+NRHS=1
+RCOND = -1.0
+NLVL= MAX( 0, INT( LOG( MIN(Mrow,Ncolu)/(SMALLSIZE+1.0D0) )/LOG(2.0D0) )+1 )
+
+ALLOCATE(IWORK(3*MIN(Mrow,Ncolu)*NLVL + 11*MIN(Mrow,Ncolu)))
+ALLOCATE(AMATR(LDA,Ncolu),BVEC(LDB,NRHS),SMATR(Mrow))
 
 	allocate(u(NQUAD_TOTAL,nstr+1),b(NQUAD_TOTAL),a(nstr+1), &
                pl(nstr+1),apl(0:nstr,NQUAD_TOTAL))
@@ -416,7 +463,7 @@ enddo
 !ccc   compute all the legendre polynormials at all quadreatures
 
 	do i=1,NQUAD_TOTAL
-     call fleg(x(i),pl,nstr+1) 
+     call poly_leg(x(i),pl,nstr+1) 
 	 do j=0,nstr
 	  apl(j,i)=pl(j+1)
 	 enddo
@@ -439,8 +486,7 @@ enddo
 	u=0.0d0
 	do k=1,NQUAD_TOTAL
     if(k>NQUAD_TOTAL-NQUAD_REGION1/2) then
-	  call polint(xpol,ypol,2,x(k),tmp,dytmp)
-	  ytmp(k)=tmp
+	  ytmp(k)=ypol(1)+(ypol(2)-ypol(1))*(x(k)-xpol(1))/(xpol(2)-xpol(1))
     else
 	  ytmp(k)=y(k)
     endif
@@ -452,24 +498,38 @@ enddo
 	enddo 
 !close(1)
 !ccc  singular value decomposition fitting to derive b
+AMATR=u
+BVEC=0.0d0
+BVEC(1:Mrow,1)=b(1:Mrow)
 
-!    call svdfit(ndata,a,ma,u,b,cor)
-    call gsh_svdfit(a,u,b,cor)
+LWORK = -1
+CALL DGELSD( Mrow, Ncolu, NRHS, AMATR, LDA, BVEC, LDB, SMATR, RCOND, RANK, WORK, &
+			 LWORK, IWORK, INFO )
+LWORK = MIN( LWMAX, INT( WORK( 1 ) ) )
+
+CALL DGELSD( Mrow, Ncolu, NRHS, AMATR, LDA, BVEC, LDB, SMATR, RCOND, RANK, WORK, &
+			 LWORK, IWORK, INFO )
+a(1:Ncolu)=BVEC(1:Ncolu,1)
+
+!write(*,*)'testing dgelsd in calfit',a(1:Ncolu)
+
+IF( INFO.GT.0 ) STOP 'The LAPACK SVD failed to converge;'
+
 
 	do i=0,nstr
       pfitdm(i)=a(i+1)
 	enddo
 
 	deallocate(u,b,a,pl,apl)
-
-	end
+    DEALLOCATE(IWORK,AMATR,BVEC,SMATR)
+	end subroutine calfit
 
 subroutine calmom(nstr,pmom)
 USE BFIT_PARAMETERS
 integer nstr
-real*8,dimension(0:nstr) :: pmom
-real*8,dimension(:),ALLOCATABLE:: pl
-real*8,dimension(:,:),ALLOCATABLE::apl
+DOUBLE PRECISION,dimension(0:nstr) :: pmom
+DOUBLE PRECISION,dimension(:),ALLOCATABLE:: pl
+DOUBLE PRECISION,dimension(:,:),ALLOCATABLE::apl
 
 integer i, j, k
 
@@ -477,7 +537,7 @@ allocate(pl(nstr+1),apl(0:nstr,NQUAD_TOTAL))
 !ccc   compute all the legendre polynormials at all quadreatures
 
 do i=1,NQUAD_TOTAL
-   call fleg(x(i),pl,nstr+1)
+   call poly_leg(x(i),pl,nstr+1)
    do j=0,nstr
      apl(j,i)=pl(j+1)
    enddo
@@ -496,37 +556,12 @@ deallocate(pl,apl)
 return
 end
 
-	SUBROUTINE gsh_svdfit(a,u,b,chisq)
-	USE nrtype; USE nrutil, ONLY : assert_eq,vabs
-	USE nr, ONLY : svbksb,svdcmp
-	IMPLICIT NONE
-	REAL(DP), DIMENSION(:), INTENT(OUT) :: a
-	REAL(DP), DIMENSION(:), INTENT(IN) :: b
-	REAL(DP), DIMENSION(:,:), INTENT(IN) :: u
-	REAL(DP), INTENT(OUT) :: chisq
-
-	REAL(DP), DIMENSION(size(a)) :: w
-	REAL(DP), DIMENSION(size(a),size(a)) :: v
-	REAL(DP), DIMENSION(size(u,1),size(u,2)) :: usav
-
-	REAL(DP), PARAMETER :: TOL=1.0e-5_DP
-	INTEGER(I4B) :: ma,n
-	n=size(b)
-	ma=size(a)
-	usav=u
-	call svdcmp(usav,w,v)
-	where (w < TOL*maxval(w)) w=0.0
-	call svbksb(usav,w,v,b,a)
-	chisq=vabs(matmul(u,a)-b)**2
-	END SUBROUTINE gsh_svdfit
-
-
-      SUBROUTINE sort2(n,arr,brr) 
+      SUBROUTINE sort2(n,arr,brr)
       INTEGER n,M,NSTACK 
-      real*8 arr(n),brr(n) 
+      DOUBLE PRECISION arr(n),brr(n) 
       PARAMETER (M=7,NSTACK=50) 
       INTEGER i,ir,j,jstack,k,l,istack(NSTACK) 
-      real*8 a,b,temp 
+      DOUBLE PRECISION a,b,temp 
 
       jstack=0 
 
@@ -643,47 +678,45 @@ end
 
       END 
 
-!C  (C) Copr. 1986-92 Numerical Recipes Software 71a. 
- 
+SUBROUTINE poly_leg(x, poly_legendre, NORD)
+INTEGER  NORD
+double precision x, poly_legendre( NORD)
+INTEGER lord
+double precision np1,coeff1,coeff2,twox
+ poly_legendre(1)=1.0d0
+ poly_legendre(2)=x
 
-      SUBROUTINE fleg(x,pl,nl) 
-      INTEGER nl 
-      real*8 x,pl(nl) 
-      INTEGER j 
-      real*8 d,f1,f2,twox 
-      pl(1)=1.0d0
-      pl(2)=x 
+if( NORD.le.2)return
 
-      if(nl.gt.2) then 
-        twox=2.0d0*x 
-        f2=x 
-        d=1.0d0 
-        do j=3,nl 
-          f1=d 
-          f2=f2+twox 
-          d=d+1.0d0 
-          pl(j)=(f2*pl(j-1)-f1*pl(j-2))/d 
-        enddo
-      endif 
-      return 
-      END 
+twox=2.0d0*x
+coeff2=x
+np1=1.0d0
+do lord=3, NORD
+  coeff1=np1
+  coeff2=coeff2+twox
+  np1=np1+1.0d0
+  poly_legendre(lord)=(coeff2* poly_legendre(lord-1)-coeff1* poly_legendre(lord-2))/np1
+enddo
+!write(*,*)'pleg2 test', nord,poly_legendre(2),poly_legendre(3),poly_legendre(4)
+END SUBROUTINE poly_leg
+
 
 ! GENERATE WIGNER D FUNCTIONS GIVEN XJ=COS(ANG)
 
 SUBROUTINE GETDMLlocal(XJ,NUMLORD,DL00,DL20,DL2P2,DL2N2)
 IMPLICIT NONE
 
-real*8, INTENT(IN) ::XJ
+DOUBLE PRECISION, INTENT(IN) ::XJ
 INTEGER, INTENT(IN) ::NUMLORD
-real*8,INTENT(OUT),DIMENSION(0:NUMLORD)::DL00,DL20,DL2P2,DL2N2
+DOUBLE PRECISION,INTENT(OUT),DIMENSION(0:NUMLORD)::DL00,DL20,DL2P2,DL2N2
 
-real*8,DIMENSION(:,:),ALLOCATABLE :: DML0,WD2,WDN2
-real*8,DIMENSION(:) ,ALLOCATABLE  ::DMM0FCTR,DMM2FCTR
-real*8,DIMENSION(:),ALLOCATABLE :: COEF1,COEF2,COEF3,COEF4,COEF5,COEF6
+DOUBLE PRECISION,DIMENSION(:,:),ALLOCATABLE :: DML0,WD2,WDN2
+DOUBLE PRECISION,DIMENSION(:) ,ALLOCATABLE  ::DMM0FCTR,DMM2FCTR
+DOUBLE PRECISION,DIMENSION(:),ALLOCATABLE :: COEF1,COEF2,COEF3,COEF4,COEF5,COEF6
 
 INTEGER ::L,M,MAXLORD,MAXMORD,MMAX
 
-real*8 :: U,DUP,DUM,DU,ONEMU2,D6,MSQ,SGNF,TWOFM,&
+DOUBLE PRECISION :: U,DUP,DUM,DU,ONEMU2,D6,MSQ,SGNF,TWOFM,&
             TMT,DML0LN1,DML2LN1,DMLN2LN1,RTMP,RTMP1
 
 MAXLORD=NUMLORD
@@ -829,12 +862,12 @@ FUNCTION ABSDIFF(NSTR,PHS,YSIG,APL,COEFFLFIT)
 USE BFIT_PARAMETERS,only:NQUAD_TOTAL
 implicit none
 INTEGER :: NSTR
-REAL*8,DIMENSION(0:NSTR,NQUAD_TOTAL)::APL
-REAL*8,DIMENSION(NQUAD_TOTAL) ::PHS,YSIG
-REAL*8,DIMENSION(NSTR) :: COEFFLFIT
+DOUBLE PRECISION,DIMENSION(0:NSTR,NQUAD_TOTAL)::APL
+DOUBLE PRECISION,DIMENSION(NQUAD_TOTAL) ::PHS,YSIG
+DOUBLE PRECISION,DIMENSION(NSTR) :: COEFFLFIT
 
 INTEGER IDIM,IDATA
-REAL*8 :: ABSDIFF,TMP
+DOUBLE PRECISION :: ABSDIFF,TMP
 
 ABSDIFF=0.0D0
 DO IDATA=1,NQUAD_TOTAL
