@@ -1,42 +1,45 @@
+subroutine gauss_legendre(x1,x2,x,w,order)
+implicit none
 
-      SUBROUTINE gauleg(x1,x2,x,w,n)
-      INTEGER n
-      DOUBLE PRECISION x1,x2,x(n),w(n)
-      DOUBLE PRECISION EPS
-      PARAMETER (EPS=3.d-14)
+INTEGER,intent(in) :: order
+DOUBLE PRECISION,intent(in):: x1,x2
+DOUBLE PRECISION,intent(out):: x(order),w(order)
+DOUBLE PRECISION,PARAMETER :: tolerance=2.d-14
+DOUBLE PRECISION, PARAMETER :: PI=3.141592653589793238462643383279502884197d0
 
-      INTEGER i,j,m
-      DOUBLE PRECISION p1,p2,p3,pp,xl,xm,z,z1
-      DOUBLE PRECISION fi,fj,fn
-      fn=dfloat(n)
-	  
-      m=(n+1)/2
-      xm=0.5d0*(x2+x1)
-      xl=0.5d0*(x2-x1)
-      do 12 i=1,m
-	    fi=dfloat(i)
-        z=cos(3.14159265358979323846d0*(fi-.25d0)/(fn+.5d0))
-1       continue
-          p1=1.d0
-          p2=0.d0
-          do 11 j=1,n
-		    fj=dfloat(j)
-            p3=p2
-            p2=p1
-            p1=((2.d0*fj-1.d0)*z*p2-(fj-1.d0)*p3)/fj
-11        continue
-          pp=n*(z*p1-p2)/(z*z-1.d0)
-          z1=z
-          z=z1-p1/pp
-        if(abs(z-z1).gt.EPS)goto 1
-        x(i)=xm-xl*z
-        x(n+1-i)=xm+xl*z
-        w(i)=2.d0*xl/((1.d0-z*z)*pp*pp)
-        w(n+1-i)=w(i)
-12    continue
-      return
-      END
+INTEGER inttmp,jnttmp,np1o2
+DOUBLE PRECISION p1,p2,p3,pp,xhlength,xmid,yval,yval1
+DOUBLE PRECISION fjnttmp,forder
+forder=1.0d0*order
 
+np1o2=(order+1)/2
+xmid=0.5d0*(x2+x1)
+xhlength=0.5d0*(x2-x1)
+yval=1.0d0
+yval1=0.0d0
+do inttmp=1,np1o2
+  yval=cos(PI*(1.0d0*inttmp-.25d0)/(forder+.5d0))
+  do while (abs(yval-yval1).gt.tolerance)
+	p1=1.d0
+	p2=0.d0
+	do jnttmp=1,order
+	  fjnttmp=1.0d0*jnttmp
+	  p3=p2
+	  p2=p1
+	  p1=((2.d0*fjnttmp-1.d0)*yval*p2-(fjnttmp-1.d0)*p3)/fjnttmp
+    enddo
+	pp=order*(yval*p1-p2)/(yval*yval-1.d0)
+	yval1=yval
+	yval=yval1-p1/pp
+  enddo
+
+  x(inttmp)=xmid-xhlength*yval
+  x(order+1-inttmp)=xmid+xhlength*yval
+  w(inttmp)=2.d0*xhlength/((1.d0-yval*yval)*pp*pp)
+  w(order+1-inttmp)=w(inttmp)
+enddo
+
+end subroutine gauss_legendre
 
 ! Pengwang's new math libraries
 FUNCTION bisearch(nxx,xx,x)
@@ -126,26 +129,27 @@ RETURN
 
 END FUNCTION Func_UVIP3P
 
-SUBROUTINE interp2(x1a,x2a,ya,m,n,x1,x2,y,dy)
-INTEGER,intent(in):: m,n
-DOUBLE PRECISION,intent(in):: x1,x2,x1a(m),x2a(n),ya(m,n)
+SUBROUTINE interpl2d(x1a,x2a,ya,mord,nord,x1,x2,y,dy)
+implicit none
+INTEGER,intent(in):: mord,nord
+DOUBLE PRECISION,intent(in):: x1,x2,x1a(mord),x2a(nord),ya(mord,nord)
 DOUBLE PRECISION,intent(out):: dy,y
 DOUBLE PRECISION,external :: Func_UVIP3P
 DOUBLE PRECISION, dimension(:), allocatable:: ymtmp,yntmp
 
 INTEGER j,k,ORDER
 ORDER=2
-allocate(ymtmp(m),yntmp(n))
-do j=1,m
-  do k=1,n
+allocate(ymtmp(mord),yntmp(nord))
+do j=1,mord
+  do k=1,nord
 	yntmp(k)=ya(j,k)
   enddo
-  ymtmp(j)=Func_UVIP3P(n,x2a,yntmp,x2,ORDER)
+  ymtmp(j)=Func_UVIP3P(nord,x2a,yntmp,x2,ORDER)
 enddo
-y=Func_UVIP3P(m,x1a,ymtmp,x1,ORDER)
+y=Func_UVIP3P(mord,x1a,ymtmp,x1,ORDER)
 deallocate(ymtmp,yntmp)
 return
-END SUBROUTINE interp2
+END SUBROUTINE interpl2d
 
 
 DOUBLE PRECISION FUNCTION TRAPZOID(NXX,XX,YY)
@@ -232,6 +236,8 @@ DOUBLE PRECISION :: A0,A1,A12,A13,A2,A3,AA0,AA1,B0,B1,DLT,DNM,DX,DY,DY0,DY1,&
 					DY2,DY3,EPSLN,PE,RENNM2,RENPM1,SMPEF,SMPEI,SMWTF,SMWTI, &
 					SX,SXX,SXY,SY,T0,T1,U,UC,V,VOL,WT,X0,X1,X2,X3,XII,XX,Y0,&
 					Y1,Y2,Y3,YP,YP0,YP1
+DOUBLE PRECISION,PARAMETER :: TINYNUMBER=1.0D-100
+
 ! Error check
    10 IF (ND.LE.1)   GO TO 90
 	  IF (NI.LE.0)   GO TO 91
@@ -353,10 +359,10 @@ DOUBLE PRECISION :: A0,A1,A12,A13,A2,A3,AA0,AA1,B0,B1,DLT,DNM,DX,DY,DY0,DY1,&
 			  ID0=IINT+IEPT-1
 			  X0=XD(ID0)
 			  Y0=YD(ID0)
-			  SMPEF=0.0
-			  SMWTF=0.0
-			  SMPEI=0.0
-			  SMWTI=0.0
+			  SMPEF=0.0d0
+			  SMWTF=0.0d0
+			  SMPEI=0.0d0
+			  SMWTI=0.0d0
 ! The third (innermost) DO-loop with respect to the four primary
 ! estimate of the first derivative
 			  DO 36  IPE=1,4
@@ -397,9 +403,9 @@ DOUBLE PRECISION :: A0,A1,A12,A13,A2,A3,AA0,AA1,B0,B1,DLT,DNM,DX,DY,DY0,DY1,&
 				SY=Y1+Y2+Y3
 				SXX=X1*X1+X2*X2+X3*X3
 				SXY=X1*Y1+X2*Y2+X3*Y3
-				DNM=4.0*SXX-SX*SX
+				DNM=4.0d0*SXX-SX*SX
 				B0=(SXX*SY-SX*SXY)/DNM
-				B1=(4.0*SXY-SX*SY)/DNM
+				B1=(4.0d0*SXY-SX*SY)/DNM
 				DY0=-B0
 				DY1=Y1-(B0+B1*X1)
 				DY2=Y2-(B0+B1*X2)
@@ -408,24 +414,25 @@ DOUBLE PRECISION :: A0,A1,A12,A13,A2,A3,AA0,AA1,B0,B1,DLT,DNM,DX,DY,DY0,DY1,&
 ! Calculates the EPSLN value, which is used to decide whether or
 ! not the volatility factor, VOL, is essentially zero.
 				EPSLN=(YD(ID0)**2+YD(ID1)**2  &
-					 +YD(ID2)**2+YD(ID3)**2)*1.0E-12
+					 +YD(ID2)**2+YD(ID3)**2)*1.0D-12
+				EPSLN=MAX(EPSLN,TINYNUMBER)
 ! Accumulates the weighted primary estimates.  --
 ! cf. Equations (13) and (14)
-				IF (VOL.GT.EPSLN)  THEN
+				IF (VOL*SXX.GT.EPSLN)  THEN
 ! - For finite weight.
-				  WT=1.0/(VOL*SXX)
+				  WT=1.0d0/(VOL*SXX)
 				  SMPEF=SMPEF+PE*WT
 				  SMWTF=SMWTF+WT
 				ELSE
 ! - For infinite weight.
 				  SMPEI=SMPEI+PE
-				  SMWTI=SMWTI+1.0
+				  SMWTI=SMWTI+1.0d0
 				END IF
    36         CONTINUE
 ! End of the third DO-loop
 ! Calculates the final estimate of the first derivative.  --
 ! cf. Equation (14)
-			  IF (SMWTI.LT.0.5)  THEN
+			  IF (SMWTI.LT.0.5d0)  THEN
 ! - When no infinite weights exist.
 				YP=SMPEF/SMWTF
 			  ELSE
@@ -450,8 +457,8 @@ DOUBLE PRECISION :: A0,A1,A12,A13,A2,A3,AA0,AA1,B0,B1,DLT,DNM,DX,DY,DY0,DY1,&
 			  A1=YP0
 			  YP1=YP1-YP0
 			  YP0=YP0-DY/DX
-			  A2=-(3.0*YP0+YP1)/DX
-			  A3= (2.0*YP0+YP1)/(DX*DX)
+			  A2=-(3.0d0*YP0+YP1)/DX
+			  A3= (2.0d0*YP0+YP1)/(DX*DX)
 			ELSE
 ! Calculates the factors for the higher-degree polynomials
 ! (when NP.GT.3).  --  cf. Equation (20)
@@ -475,7 +482,7 @@ DOUBLE PRECISION :: A0,A1,A12,A13,A2,A3,AA0,AA1,B0,B1,DLT,DNM,DX,DY,DY0,DY1,&
 		  ELSE
 ! - With a higher-degree polynomial.  --  cf. Equation (19)
 			U=(XII-XD(IINT))/DX
-			UC=1.0-U
+			UC=1.0d0-U
 			V=AA0*((U**NP0)-U)+AA1*((UC**NP0)-UC)
 			YI(II)=YD(IINT)+DY*U+V
 		  END IF
@@ -513,10 +520,10 @@ DOUBLE PRECISION :: A0,A1,A12,A13,A2,A3,AA0,AA1,B0,B1,DLT,DNM,DX,DY,DY0,DY1,&
    70 DLT=X1*X2*(X2-X1)
 	  A1=(X2*X2*Y1-X1*X1*Y2)/DLT
 	  A2=(X1*Y2-X2*Y1)/DLT
-	  A12=2.0*A2*X2+A1
+	  A12=2.0d0*A2*X2+A1
 	  DO 71  II=1,NI
 		XX=XI(II)-X0
-		IF (XX.LE.0.0)  THEN
+		IF (XX.LE.0.0d0)  THEN
 		  YI(II)=Y0+A1*XX
 		ELSE IF (XX.LT.X2) THEN
 		  YI(II)=Y0+XX*(A1+XX*A2)
@@ -539,10 +546,10 @@ DOUBLE PRECISION :: A0,A1,A12,A13,A2,A3,AA0,AA1,B0,B1,DLT,DNM,DX,DY,DY0,DY1,&
 	  A3=(X2*X3*(X3-X2)*Y1 &
 		+X3*X1*(X1-X3)*Y2 &
 		+X1*X2*(X2-X1)*Y3)/DLT
-	  A13=(3.0*A3*X3+2.0*A2)*X3+A1
+	  A13=(3.0d0*A3*X3+2.0d0*A2)*X3+A1
 	  DO 81  II=1,NI
 		XX=XI(II)-X0
-		IF (XX.LE.0.0)  THEN
+		IF (XX.LE.0.0d0)  THEN
 		  YI(II)=Y0+A1*XX
 		ELSE IF (XX.LT.X3) THEN
 		  YI(II)=Y0+XX*(A1+XX*(A2+XX*A3))
@@ -589,13 +596,13 @@ SUBROUTINE bisection(func, x1, x2, root, tol)
   fx1 = func(x1)
   fx2 = func(x2)
 
-  IF (fx1 * fx2 >= 0.0) THEN
+  IF (fx1 * fx2 >= 0.0d0) THEN
 	STOP "Root not bracketed"
 	RETURN
   END IF
 
   DO iter = 1, max_iter
-	xmid = (x1 + x2) / 2.0
+	xmid = (x1 + x2) / 2.0d0
 	froot = func(xmid)
 
 	IF (ABS(froot) < tol) THEN
@@ -603,7 +610,7 @@ SUBROUTINE bisection(func, x1, x2, root, tol)
 	  RETURN
 	END IF
 
-	IF (fx1 * froot < 0.0) THEN
+	IF (fx1 * froot < 0.0d0) THEN
 	  x2 = xmid
 	  fx2 = froot
 	ELSE
@@ -1006,3 +1013,65 @@ END SUBROUTINE Err_MSG
 !return
 !END
 
+!SUBROUTINE gauleg(x1,x2,x,w,n)
+!INTEGER n
+!DOUBLE PRECISION x1,x2,x(n),w(n)
+!DOUBLE PRECISION EPS
+!PARAMETER (EPS=3.d-14)
+!
+!INTEGER i,j,m
+!DOUBLE PRECISION p1,p2,p3,pp,xl,xm,z,z1
+!DOUBLE PRECISION fi,fj,fn
+!fn=dfloat(n)
+!
+!m=(n+1)/2
+!xm=0.5d0*(x2+x1)
+!xl=0.5d0*(x2-x1)
+!do 12 i=1,m
+!  fi=dfloat(i)
+!  z=cos(3.14159265358979323846d0*(fi-.25d0)/(fn+.5d0))
+!1       continue
+!	p1=1.d0
+!	p2=0.d0
+!	do 11 j=1,n
+!	  fj=dfloat(j)
+!	  p3=p2
+!	  p2=p1
+!	  p1=((2.d0*fj-1.d0)*z*p2-(fj-1.d0)*p3)/fj
+!11        continue
+!	pp=n*(z*p1-p2)/(z*z-1.d0)
+!	z1=z
+!	z=z1-p1/pp
+!  if(abs(z-z1).gt.EPS)goto 1
+!  x(i)=xm-xl*z
+!  x(n+1-i)=xm+xl*z
+!  w(i)=2.d0*xl/((1.d0-z*z)*pp*pp)
+!  w(n+1-i)=w(i)
+!12    continue
+!return
+!END
+
+!SUBROUTINE locate(xx,n,x,j)
+!INTEGER j,n
+!REAL x,xx(n)
+!INTEGER jl,jm,ju
+!jl=0
+!ju=n+1
+!10    if(ju-jl.gt.1)then
+!  jm=(ju+jl)/2
+!  if((xx(n).ge.xx(1)).eqv.(x.ge.xx(jm)))then
+!	jl=jm
+!  else
+!	ju=jm
+!  endif
+!goto 10
+!endif
+!if(x.eq.xx(1))then
+!  j=1
+!else if(x.eq.xx(n))then
+!  j=n-1
+!else
+!  j=jl
+!endif
+!return
+!END

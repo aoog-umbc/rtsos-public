@@ -40,8 +40,8 @@ DOUBLE PRECISION,dimension(NQUAD_TOTAL):: x,w,xx,y,ysig
 CONTAINS
 SUBROUTINE BFIT_QUAD_SETUP(angtrun)
 DOUBLE PRECISION :: angtrun
-call gauleg(angtrun,1.0d0,x1,w1,NQUAD_REGION1/2)
-call gauleg(0.0d0,angtrun,x2,w2,NQUAD_REGION2/2)
+call gauss_legendre(angtrun,1.0d0,x1,w1,NQUAD_REGION1/2)
+call gauss_legendre(0.0d0,angtrun,x2,w2,NQUAD_REGION2/2)
 do i=1,NQUAD_REGION1/2
   w(i)=w1(NQUAD_REGION1/2+1-i)
   x(i)=-x1(NQUAD_REGION1/2+1-i)
