@@ -291,44 +291,6 @@ ANG=-DANG
 DEALLOCATE(DL00,DL20,DL2P2,DL2N2)
 END SUBROUTINE PHF
 
-      SUBROUTINE dgauleg(x1,x2,x,w,n)
-      INTEGER n
-      DOUBLE PRECISION x1,x2,x(n),w(n)
-      DOUBLE PRECISION EPS
-      PARAMETER (EPS=3.d-14)
-
-      INTEGER i,j,m
-      DOUBLE PRECISION p1,p2,p3,pp,xl,xm,z,z1
-	  DOUBLE PRECISION fi,fj,fn
-      fn=dfloat(n)
-	  
-      m=(n+1)/2
-      xm=0.5d0*(x2+x1)
-      xl=0.5d0*(x2-x1)
-      do 12 i=1,m
-	    fi=dfloat(i)
-        z=cos(3.14159265358979323846d0*(fi-.25d0)/(fn+.5d0))
-1       continue
-          p1=1.d0
-          p2=0.d0
-          do 11 j=1,n
-		    fj=dfloat(j)
-            p3=p2
-            p2=p1
-            p1=((2.d0*fj-1.d0)*z*p2-(fj-1.d0)*p3)/fj
-11        continue
-          pp=n*(z*p1-p2)/(z*z-1.d0)
-          z1=z
-          z=z1-p1/pp
-        if(abs(z-z1).gt.EPS)goto 1
-        x(i)=xm-xl*z
-        x(n+1-i)=xm+xl*z
-        w(i)=2.d0*xl/((1.d0-z*z)*pp*pp)
-        w(n+1-i)=w(i)
-12    continue
-      return
-      END
-
 
 SUBROUTINE ANGASSIGN(NUMANG,ANG)
 INTEGER :: NUMANG,IANG
@@ -338,24 +300,24 @@ ANG=0.0D0
 RTMP=0.001D0
 ANG(1)=0.0D0
 DO IANG=2,11
-ANG(IANG)=ANG(IANG-1)+RTMP
+	ANG(IANG)=ANG(IANG-1)+RTMP
 ENDDO
 RTMP=0.01D0
 DO IANG=12,20
-ANG(IANG)=ANG(IANG-1)+RTMP
+	ANG(IANG)=ANG(IANG-1)+RTMP
 ENDDO
 RTMP=0.1D0
 DO IANG=21,29
-ANG(IANG)=ANG(IANG-1)+RTMP
+	ANG(IANG)=ANG(IANG-1)+RTMP
 ENDDO
 RTMP=1.0D0
 DO IANG=30,38
-ANG(IANG)=ANG(IANG-1)+RTMP
+	ANG(IANG)=ANG(IANG-1)+RTMP
 ENDDO
 
 RTMP=5.0D0
 DO IANG=39,72
-ANG(IANG)=ANG(IANG-1)+RTMP
+	ANG(IANG)=ANG(IANG-1)+RTMP
 ENDDO
 
 END SUBROUTINE ANGASSIGN

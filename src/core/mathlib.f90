@@ -628,450 +628,154 @@ write (*,*) 'Error Message: ',string
 STOP
 END SUBROUTINE Err_MSG
 
-!SUBROUTINE swap(a,b)
-!Double Precision, INTENT(INOUT) :: a,b
-!Double Precision :: dum
-!dum=a
-!a=b
-!b=dum
-!END SUBROUTINE swap
-
-!	subroutine myspline(n,x,y,nn,xn,yn)
-!
-!!c---------spline fit to derive the yy value at point xx
-!
-!!c  Inputs:
-!!c     n:    the length of x and y
-!!c     x(n): the x values which x(1) < x(2) ... < x(n)
-!!c     y(n): the y value which correspondent to x(n)
-!!c     nn:  the length of vector xx and yy
-!!c     xn:  the x value at which y value is wanted
-!!c
-!
-!!c  Outputs:
-!
-!!c     yn: the wanted y value from the fitting
-!!c  Internal variables:
-!
-!!c     yp1: the derivative of y over x at x(1), for natural bc, yp1=1.e31
-!!c     ypn: the derivative of y over x at x(n), for natural bc, ypn=1.e31
-!!c     y2(n): the second derivatives
-!
-!      integer n,nn,ny2,i
-!      parameter (ny2=5000)
-!      DOUBLE PRECISION x(*),y(*),xn(*),yn(*),y2(ny2),xx,yy,yp1,ypn
-!
-!!c--------the sorting which makes sure x(1)<x(2)<...<x(n)-------
-!
-!!        call sort2(n,x,y)
-!
-!!c--------start spline------------
-!
-!        yp1=1.e31
-!        ypn=1.e31
-!
-!!    yp1=(y(2)-y(1))/(x(2)-x(1))
-!!	ypn=(y(n)-y(n-1))/(x(n)-x(n-1))
-!
-!	call spline2(x,y,n,yp1,ypn,y2)
-!	do i=1,nn
-!        xx = xn(i)
-!        call splint2(x,y,y2,n,xx,yy)
-!        yn(i) = yy
-!	enddo
-!
-!	return
-!
-!   	end
-
-	
 
 
+SUBROUTINE qsort2a(NDIM,frr1,frr2)
+IMPLICIT NONE
+INTEGER,INTENT(IN):: NDIM
+DOUBLE PRECISION,DIMENSION(NDIM),INTENT(INOUT):: frr1,frr2
 
-!      SUBROUTINE spline2(x,y,n,yp1,ypn,y2)
-!
-!      INTEGER n,NMAX, ny2
-!      PARAMETER (NMAX=5000)
-!      parameter (ny2=5000)
-!      DOUBLE PRECISION yp1,ypn,x(n),y(n),y2(ny2)
-!      INTEGER i,k
-!      DOUBLE PRECISION p,qn,sig,un,u(NMAX)
-!
-!      if (yp1.gt..99e30) then
-!        y2(1)=0.0d0
-!        u(1)=0.0d0
-!      else
-!        y2(1)=-0.50d0
-!        u(1)=(3.0d0/(x(2)-x(1)))*((y(2)-y(1))/(x(2)-x(1))-yp1)
-!      endif
-!
-!      do i=2,n-1
-!
-!        sig=(x(i)-x(i-1))/(x(i+1)-x(i-1))
-!        p=sig*y2(i-1)+2.0d0
-!        y2(i)=(sig-1.0d0)/p
-!
-!        u(i)=(6.0d0*((y(i+1)-y(i))/(x(i+1)      &
-!    -x(i))-(y(i)-y(i-1))/(x(i)-x(i-1)))/(x(i+1)-x(i-1))-sig*    &
-!     u(i-1))/p
-!
-!      enddo
-!
-!      if (ypn.gt..99e30) then
-!        qn=0.0d0
-!        un=0.0d0
-!      else
-!        qn=0.50d0
-!        un=(3.0d0/(x(n)-x(n-1)))*(ypn-(y(n)-y(n-1))/(x(n)-x(n-1)))
-!      endif
-!
-!      y2(n)=(un-qn*u(n-1))/(qn*y2(n-1)+1.0d0)
-!
-!      do k=n-1,1,-1
-!        y2(k)=y2(k)*y2(k+1)+u(k)
-!      enddo
-!
-!      return
-!
-!      END
-!
-!
-!
-!      SUBROUTINE splint2(xa,ya,y2a,n,x,y)
-!
-!      INTEGER n
-!      DOUBLE PRECISION x,y,xa(n),y2a(n),ya(n)
-!      INTEGER k,khi,klo
-!      DOUBLE PRECISION a,b,h
-!
-!      klo=1
-!      khi=n
-!
-!100     if (khi-klo.gt.1) then
-!
-!        k=(khi+klo)/2
-!
-!        if(xa(k).gt.x)then
-!          khi=k
-!        else
-!          klo=k
-!        endif
-!
-!      goto 100
-!
-!      endif
-!
-!      h=xa(khi)-xa(klo)
-!      if (h.eq.0.0d0) stop 'bad xa input in splint'
-!
-!      a=(xa(khi)-x)/h
-!      b=(x-xa(klo))/h
-!
-!       y=a*ya(klo)+b*ya(khi)+((a**3-a)*y2a(klo)+ &
-!        (b**3-b)*y2a(khi))*(h*h)/6.0d0
-!
-!      return
-!
-!      END
+INTEGER, PARAMETER :: MSIZE=7,NSTACK=50
+INTEGER,DIMENSION(NSTACK):: arr_stack
+
+INTEGER :: itmp,idr,jtmp,pstack,ktmp,ltmp
+DOUBLE PRECISION :: f1t,f2t,temp
+
+pstack=0
+ltmp=1
+idr=NDIM
+
+largeloop: do
+
+if(idr-ltmp < MSIZE)then
+
+  do jtmp=ltmp+1,idr
+	f1t=frr1(jtmp)
+	f2t=frr2(jtmp)
+	do itmp=jtmp-1,1,-1
+	  if(frr1(itmp)<=f1t) exit
+	  frr1(itmp+1)=frr1(itmp)
+	  frr2(itmp+1)=frr2(itmp)
+	enddo
+    frr1(itmp+1)=f1t
+	frr2(itmp+1)=f2t
+  enddo
+
+  if(pstack==0)return
+
+  idr=arr_stack(pstack)
+  ltmp=arr_stack(pstack-1)
+  pstack=pstack-2
+
+else
+
+  ktmp=(ltmp+idr)/2
+  temp=frr1(ktmp)
+  frr1(ktmp)=frr1(ltmp+1)
+  frr1(ltmp+1)=temp
+  temp=frr2(ktmp)
+  frr2(ktmp)=frr2(ltmp+1)
+  frr2(ltmp+1)=temp
+  if(frr1(ltmp+1)>frr1(idr))then
+	temp=frr1(ltmp+1)
+	frr1(ltmp+1)=frr1(idr)
+	frr1(idr)=temp
+	temp=frr2(ltmp+1)
+	frr2(ltmp+1)=frr2(idr)
+	frr2(idr)=temp
+  endif
+
+  if(frr1(ltmp)>frr1(idr))then
+	temp=frr1(ltmp)
+	frr1(ltmp)=frr1(idr)
+	frr1(idr)=temp
+	temp=frr2(ltmp)
+	frr2(ltmp)=frr2(idr)
+	frr2(idr)=temp
+  endif
+
+  if(frr1(ltmp+1)>frr1(ltmp))then
+	temp=frr1(ltmp+1)
+	frr1(ltmp+1)=frr1(ltmp)
+	frr1(ltmp)=temp
+	temp=frr2(ltmp+1)
+	frr2(ltmp+1)=frr2(ltmp)
+	frr2(ltmp)=temp
+  endif
+
+  itmp=ltmp+1
+  jtmp=idr
+  f1t=frr1(ltmp)
+  f2t=frr2(ltmp)
 
 
-!      SUBROUTINE hunt(xx,n,x,jlo)
-!      INTEGER jlo,n
-!      DOUBLE PRECISION x,xx(n)
-!      INTEGER inc,jhi,jm
-!      LOGICAL ascnd
-!      ascnd=xx(n).ge.xx(1)
-!      if(jlo.le.0.or.jlo.gt.n)then
-!        jlo=0
-!        jhi=n+1
-!        goto 3
-!      endif
-!      inc=1
-!      if(x.ge.xx(jlo).eqv.ascnd)then
-!1       jhi=jlo+inc
-!        if(jhi.gt.n)then
-!          jhi=n+1
-!        else if(x.ge.xx(jhi).eqv.ascnd)then
-!          jlo=jhi
-!          inc=inc+inc
-!          goto 1
-!        endif
-!      else
-!        jhi=jlo
-!2       jlo=jhi-inc
-!        if(jlo.lt.1)then
-!          jlo=0
-!        else if(x.lt.xx(jlo).eqv.ascnd)then
-!          jhi=jlo
-!          inc=inc+inc
-!          goto 2
-!        endif
-!      endif
-!3     if(jhi-jlo.eq.1)then
-!        if(x.eq.xx(n))jlo=n-1
-!        if(x.eq.xx(1))jlo=1
-!        return
-!      endif
-!      jm=(jhi+jlo)/2
-!      if(x.ge.xx(jm).eqv.ascnd)then
-!        jlo=jm
-!      else
-!        jhi=jm
-!      endif
-!      goto 3
-!      END
+  itmploop : do
+	  itmp=itmp+1
 
-!      SUBROUTINE polint(xa,ya,n,x,y,dy)
-!      INTEGER n,NMAX
-!      DOUBLE PRECISION dy,x,y,xa(n),ya(n)
-!      PARAMETER (NMAX=10)
-!      INTEGER i,m,ns
-!      DOUBLE PRECISION den,dif,dift,ho,hp,w,c(NMAX),d(NMAX)
-!      ns=1
-!      dif=abs(x-xa(1))
-!      do i=1,n
-!        dift=abs(x-xa(i))
-!        if (dift.lt.dif) then
-!          ns=i
-!          dif=dift
-!        endif
-!        c(i)=ya(i)
-!        d(i)=ya(i)
-!      enddo
-!      y=ya(ns)
-!      ns=ns-1
-!      do m=1,n-1
-!        do i=1,n-m
-!          ho=xa(i)-x
-!          hp=xa(i+m)-x
-!          w=c(i+1)-d(i)
-!          den=ho-hp
-!          if(den.eq.0.0d0) then
-!              write(*,*)'polint data=',xa,ya,n,x
-!              stop 'failure in polint'
-!		  endif
-!          den=w/den
-!          d(i)=hp*den
-!          c(i)=ho*den
-!        enddo
-!        if (2*ns.lt.n-m)then
-!          dy=c(ns+1)
-!        else
-!          dy=d(ns)
-!          ns=ns-1
-!        endif
-!        y=y+dy
-!      enddo
-!      return
-!      END
+	  if(frr1(itmp)<f1t) cycle itmploop
 
-!	DOUBLE PRECISION FUNCTION rtsec(func,x1,x2,xacc)
-!	IMPLICIT NONE
-!	DOUBLE PRECISION, INTENT(IN) :: x1,x2,xacc
-!	INTERFACE
-!		DOUBLE PRECISION FUNCTION func(x)
-!		IMPLICIT NONE
-!		DOUBLE PRECISION, INTENT(IN) :: x
-!		END FUNCTION func
-!	END INTERFACE
-!	INTEGER, PARAMETER :: MAXIT=30
-!	INTEGER :: j
-!	DOUBLE PRECISION :: dx,f,fl,xl
-!	fl=func(x1)
-!	f=func(x2)
-!	if (abs(fl) < abs(f)) then
-!		rtsec=x1
-!		xl=x2
-!		call swap(fl,f)
-!	else
-!		xl=x1
-!		rtsec=x2
-!	end if
-!	do j=1,MAXIT
-!		dx=(xl-rtsec)*f/(f-fl)
-!		xl=rtsec
-!		fl=f
-!		rtsec=rtsec+dx
-!		f=func(rtsec)
-!		if (abs(dx) < xacc .or. f == 0.0d0) RETURN
-!	end do
-!	call Err_MSG('rtsec: exceed maximum iterations')
-!	END FUNCTION rtsec
+	  jtmp=jtmp-1
+	  do while (frr1(jtmp)>f1t)
+		  jtmp=jtmp-1
+	  enddo
 
-!	FUNCTION rtsafe(funcd,x1,x2,xacc)
-!	IMPLICIT NONE
-!	DOUBLE PRECISION, INTENT(IN) :: x1,x2,xacc
-!	DOUBLE PRECISION :: rtsafe
-!	INTERFACE
-!		SUBROUTINE funcd(x,fval,fderiv)
-!		IMPLICIT NONE
-!		DOUBLE PRECISION, INTENT(IN) :: x
-!		DOUBLE PRECISION, INTENT(OUT) :: fval,fderiv
-!		END SUBROUTINE funcd
-!	END INTERFACE
-!	INTEGER, PARAMETER :: MAXIT=100
-!	INTEGER :: j
-!	DOUBLE PRECISION :: df,dx,dxold,f,fh,fl,temp,xh,xl
-!	call funcd(x1,fl,df)
-!	call funcd(x2,fh,df)
-!	if ((fl > 0.0 .and. fh > 0.0) .or. &
-!		(fl < 0.0 .and. fh < 0.0)) &
-!	call Err_MSG('root must be bracketed in rtsafe')
-!	if (fl == 0.0) then
-!		rtsafe=x1
-!		RETURN
-!	else if (fh == 0.0) then
-!		rtsafe=x2
-!		RETURN
-!	else if (fl < 0.0) then
-!		xl=x1
-!		xh=x2
-!	else
-!		xh=x1
-!		xl=x2
-!	end if
-!	rtsafe=0.5d0*(x1+x2)
-!	dxold=abs(x2-x1)
-!	dx=dxold
-!	call funcd(rtsafe,f,df)
-!	do j=1,MAXIT
-!		if (((rtsafe-xh)*df-f)*((rtsafe-xl)*df-f) > 0.0 .or. &
-!			abs(2.0d0*f) > abs(dxold*df) ) then
-!			dxold=dx
-!			dx=0.5d0*(xh-xl)
-!			rtsafe=xl+dx
-!			if (xl == rtsafe) RETURN
-!		else
-!			dxold=dx
-!			dx=f/df
-!			temp=rtsafe
-!			rtsafe=rtsafe-dx
-!			if (temp == rtsafe) RETURN
-!		end if
-!		if (abs(dx) < xacc) RETURN
-!		call funcd(rtsafe,f,df)
-!		if (f < 0.0) then
-!			xl=rtsafe
-!		else
-!			xh=rtsafe
-!		end if
-!	end do
-!	call Err_MSG('rtsafe: exceeded maximum iterations')
-!	END FUNCTION rtsafe
+	  if(jtmp<itmp) exit itmploop
 
-!      DOUBLE PRECISION FUNCTION expbessi1(x)
-!      DOUBLE PRECISION bessi1,x
-!      DOUBLE PRECISION ax
-!      DOUBLE PRECISION p1,p2,p3,p4,p5,p6,p7,q1,q2,q3,q4,q5,q6,q7,q8,q9,y
-!      SAVE p1,p2,p3,p4,p5,p6,p7,q1,q2,q3,q4,q5,q6,q7,q8,q9
-!      DATA p1,p2,p3,p4,p5,p6,p7/0.5d0,0.87890594d0,0.51498869d0, &
-!           0.15084934d0,0.2658733d-1,0.301532d-2,0.32411d-3/
-!      DATA q1,q2,q3,q4,q5,q6,q7,q8,q9/0.39894228d0,-0.3988024d-1, &
-!        -0.362018d-2,0.163801d-2,-0.1031555d-1,0.2282967d-1,-0.2895312d-1, &
-!        0.1787654d-1,-0.420059d-2/
-!      ax=abs(x)
-!      if (abs(x).lt.3.75d0) then
-!        y=(x/3.75D0)**2
-!        bessi1=x*(p1+y*(p2+y*(p3+y*(p4+y*(p5+y*(p6+y*p7))))))
-!        expbessi1=dexp(-ax)*bessi1
-!      else
-!        y=3.75D0/ax
-!!        bessi1=(exp(ax)/sqrt(ax))*(q1+y*(q2+y*(q3+y*(q4    &
-!!		       +y*(q5+y*(q6+y*(q7+y*(q8+y*q9))))))))
-!        expbessi1=(1.0d0/dsqrt(ax))*(q1+y*(q2+y*(q3+y*(q4    &
-!		       +y*(q5+y*(q6+y*(q7+y*(q8+y*q9))))))))
-!
-!        if(x.lt.0.0D0)bessi1=-bessi1
-!      endif
-!      return
-!      END
+	  temp=frr1(itmp)
+	  frr1(itmp)=frr1(jtmp)
+	  frr1(jtmp)=temp
+	  temp=frr2(itmp)
+	  frr2(itmp)=frr2(jtmp)
+	  frr2(jtmp)=temp
+  enddo itmploop
 
+  frr1(ltmp)=frr1(jtmp)
+  frr1(jtmp)=f1t
+  frr2(ltmp)=frr2(jtmp)
+  frr2(jtmp)=f2t
+  pstack=pstack+2
 
-!DOUBLE PRECISION FUNCTION expbessi0(x)
-!DOUBLE PRECISION bessi0,x
-!DOUBLE PRECISION ax
-!DOUBLE PRECISION p1,p2,p3,p4,p5,p6,p7,q1,q2,q3,q4,q5,q6,q7,q8,q9,y
-!SAVE p1,p2,p3,p4,p5,p6,p7,q1,q2,q3,q4,q5,q6,q7,q8,q9
-!DATA p1,p2,p3,p4,p5,p6,p7/1.0d0,3.5156229d0,3.0899424d0,  &
-!	 1.2067492d0,0.2659732d0,0.360768d-1,0.45813d-2/
-!DATA q1,q2,q3,q4,q5,q6,q7,q8,q9/0.39894228d0,0.1328592d-1,      &
-!0.225319d-2,-0.157565d-2,0.916281d-2,-0.2057706d-1,0.2635537d-1,&
-!-0.1647633d-1,0.392377d-2/
-!ax=abs(x)
-!if (abs(x).lt.3.75d0) then
-!  y=(x/3.75d0)**2
-!  bessi0=p1+y*(p2+y*(p3+y*(p4+y*(p5+y*(p6+y*p7)))))
-!  expbessi0=dexp(-ax)*bessi0
-!else
-!  y=3.75d0/ax
-!!        bessi0=(exp(ax)/sqrt(ax))*(q1+y*(q2+y*(q3+y*(q4   &
-!!		        +y*(q5+y*(q6+y*(q7+y*(q8+y*q9))))))))
-!  expbessi0=(1.0d0/dsqrt(ax))*(q1+y*(q2+y*(q3+y*(q4   &
-!		  +y*(q5+y*(q6+y*(q7+y*(q8+y*q9))))))))
-!
-!endif
-!return
-!END
+  if(pstack>NSTACK) stop 'NSTACK is too small in qsort2a'
 
-!SUBROUTINE gauleg(x1,x2,x,w,n)
-!INTEGER n
-!DOUBLE PRECISION x1,x2,x(n),w(n)
-!DOUBLE PRECISION EPS
-!PARAMETER (EPS=3.d-14)
-!
-!INTEGER i,j,m
-!DOUBLE PRECISION p1,p2,p3,pp,xl,xm,z,z1
-!DOUBLE PRECISION fi,fj,fn
-!fn=dfloat(n)
-!
-!m=(n+1)/2
-!xm=0.5d0*(x2+x1)
-!xl=0.5d0*(x2-x1)
-!do 12 i=1,m
-!  fi=dfloat(i)
-!  z=cos(3.14159265358979323846d0*(fi-.25d0)/(fn+.5d0))
-!1       continue
-!	p1=1.d0
-!	p2=0.d0
-!	do 11 j=1,n
-!	  fj=dfloat(j)
-!	  p3=p2
-!	  p2=p1
-!	  p1=((2.d0*fj-1.d0)*z*p2-(fj-1.d0)*p3)/fj
-!11        continue
-!	pp=n*(z*p1-p2)/(z*z-1.d0)
-!	z1=z
-!	z=z1-p1/pp
-!  if(abs(z-z1).gt.EPS)goto 1
-!  x(i)=xm-xl*z
-!  x(n+1-i)=xm+xl*z
-!  w(i)=2.d0*xl/((1.d0-z*z)*pp*pp)
-!  w(n+1-i)=w(i)
-!12    continue
-!return
-!END
+  if(idr-itmp+1 >= jtmp-ltmp)then
+	arr_stack(pstack)=idr
+	arr_stack(pstack-1)=itmp
+	idr=jtmp-1
+  else
+	arr_stack(pstack)=jtmp-1
+	arr_stack(pstack-1)=ltmp
+	ltmp=itmp
+  endif
 
-!SUBROUTINE locate(xx,n,x,j)
-!INTEGER j,n
-!REAL x,xx(n)
-!INTEGER jl,jm,ju
-!jl=0
-!ju=n+1
-!10    if(ju-jl.gt.1)then
-!  jm=(ju+jl)/2
-!  if((xx(n).ge.xx(1)).eqv.(x.ge.xx(jm)))then
-!	jl=jm
-!  else
-!	ju=jm
-!  endif
-!goto 10
-!endif
-!if(x.eq.xx(1))then
-!  j=1
-!else if(x.eq.xx(n))then
-!  j=n-1
-!else
-!  j=jl
-!endif
-!return
-!END
+endif
+
+enddo largeloop
+
+ENDSUBROUTINE qsort2a
+
+SUBROUTINE REMOVE_DUP(NARRAYINPUT,ARRAYINPUT,NARRAYOUTPUT,ARRAYOUTPUT)
+implicit none
+integer,intent(in) :: NARRAYINPUT
+integer,intent(out) :: NARRAYOUTPUT
+DOUBLE PRECISION,DIMENSION(NARRAYINPUT),intent(inout) :: ARRAYINPUT  ! The input
+DOUBLE PRECISION,DIMENSION(NARRAYINPUT),intent(inout) :: ARRAYOUTPUT
+
+integer :: itmp, jtmp
+
+ARRAYINPUT=ARRAYOUTPUT
+
+NARRAYOUTPUT = 1
+ARRAYOUTPUT(1) = ARRAYINPUT(1)
+LOOP_SEARCH: do itmp=2,NARRAYINPUT
+do jtmp=1,NARRAYOUTPUT
+  if (ABS(ARRAYOUTPUT(jtmp) - ARRAYINPUT(itmp))<1.0D-6) then
+! Found a match, restart searching again
+	cycle LOOP_SEARCH
+  endif
+end do
+! No match found, add it to the output
+NARRAYOUTPUT = NARRAYOUTPUT + 1
+ARRAYOUTPUT(NARRAYOUTPUT) = ARRAYINPUT(itmp)
+end do LOOP_SEARCH
+
+END SUBROUTINE REMOVE_DUP

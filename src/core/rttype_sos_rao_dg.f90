@@ -179,7 +179,7 @@ LOGICAL :: FWDCN_CORR_FLAG=.false.
 !to ensure proper ielnastic scattering calculation
 !Don't try to change the value of these two logical flags if inelastic scattering is enabled.
 LOGICAL :: DOUBLE_GAUSSIAN_QUAD=.true.
-LOGICAL :: PSEUDO_VIEWING_QUAD=.false.  ! DEFAULT SHOULD BE .FALSE.
+!LOGICAL :: PSEUDO_VIEWING_QUAD=.false.  ! DEFAULT SHOULD BE .FALSE.
 ! Don't change the above two logical flags unless there a good reason.
 ! Don't change the above two logical flags unless there a good reason.
 
