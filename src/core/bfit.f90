@@ -224,7 +224,7 @@ DOUBLE PRECISION,DIMENSION(:,:),ALLOCATABLE :: apl,u
 ! DGELSD definitions
 INTEGER          Mrow, Ncolu, NRHS
 INTEGER          LDA, LDB,NLVL
-INTEGER,PARAMETER :: LWMAX=10000,SMALLSIZE=25
+INTEGER,PARAMETER :: LWMAX=50000,SMALLSIZE=25
 
 !     .. Local Scalars ..
 INTEGER          INFO, LWORK, RANK
@@ -331,9 +331,10 @@ a(1:Ncolu)=BVEC(1:Ncolu,1)
 
 !write(*,*)'testing dgelsd,Mrow,Ncolu,LWORK=',Mrow,Ncolu,LWORK,a(1:Ncolu)
 
-IF( INFO.GT.0 ) STOP 'The LAPACK SVD failed to converge;'
-
-
+IF( INFO /= 0 )THEN
+   IF(INFO>0 )STOP 'The LAPACK SVD failed to converge;'
+   IF(INFO<0 )WRITE(*,*)'DGELSD INFO=',INFO,'LWORK=',LWORK,'WORK(1)=',INT(WORK(1))
+ENDIF
     if(intflag==4)then
 	  do i=0,nstr
        pfitdm(i)=a(i+1)
@@ -357,6 +358,7 @@ end
 
  	subroutine calmom_ger(intflag,nstr,pmom,DELTAM)
     USE BFIT_PARAMETERS
+    implicit none
 
     DOUBLE PRECISION,dimension(0:nstr) :: pmom
 
@@ -407,19 +409,20 @@ end
 
 !  GENERLIZED WIGNER D FIT OVER
 
-	subroutine calfit(nstr,pmom,pfitdm)
-    USE BFIT_PARAMETERS
-    integer nstr,ndata,ma, i, j, k, l, nkp
-    DOUBLE PRECISION,dimension(0:nstr):: pmom,pfitdm
-    DOUBLE PRECISION,DIMENSION(:),ALLOCATABLE :: b,a,pl
-    DOUBLE PRECISION,DIMENSION(:,:),ALLOCATABLE ::u,apl
-    DOUBLE PRECISION cor
-	DOUBLE PRECISION xpol(2),ypol(2),ytmp(NQUAD_TOTAL),tmp,dytmp
+subroutine calfit(nstr,pmom,pfitdm)
+USE BFIT_PARAMETERS
+implicit none
+integer nstr,ndata,ma, i, j, k, l, nkp
+DOUBLE PRECISION,dimension(0:nstr):: pmom,pfitdm
+DOUBLE PRECISION,DIMENSION(:),ALLOCATABLE :: b,a,pl
+DOUBLE PRECISION,DIMENSION(:,:),ALLOCATABLE ::u,apl
+DOUBLE PRECISION cor
+DOUBLE PRECISION xpol(2),ypol(2),ytmp(NQUAD_TOTAL),tmp,dytmp
 
 ! DGELSD definitions
 INTEGER          Mrow, Ncolu, NRHS
 INTEGER          LDA, LDB,NLVL
-INTEGER,PARAMETER :: LWMAX=10000,SMALLSIZE=25
+INTEGER,PARAMETER :: LWMAX=50000,SMALLSIZE=25
 
 !     .. Local Scalars ..
 INTEGER          INFO, LWORK, RANK
@@ -510,7 +513,10 @@ a(1:Ncolu)=BVEC(1:Ncolu,1)
 
 !write(*,*)'testing dgelsd in calfit',a(1:Ncolu)
 
-IF( INFO.GT.0 ) STOP 'The LAPACK SVD failed to converge;'
+IF( INFO /= 0 )THEN
+   IF(INFO>0 )STOP 'The LAPACK SVD failed to converge;'
+   IF(INFO<0 )WRITE(*,*)'DGELSD INFO=',INFO,'LWORK=',LWORK,'WORK(1)=',INT(WORK(1))
+ENDIF
 
 
 	do i=0,nstr
@@ -523,6 +529,8 @@ IF( INFO.GT.0 ) STOP 'The LAPACK SVD failed to converge;'
 
 subroutine calmom(nstr,pmom)
 USE BFIT_PARAMETERS
+implicit none
+
 integer nstr
 DOUBLE PRECISION,dimension(0:nstr) :: pmom
 DOUBLE PRECISION,dimension(:),ALLOCATABLE:: pl
@@ -555,6 +563,7 @@ end
 
 
 SUBROUTINE poly_leg(x, poly_legendre, NORD)
+implicit none
 INTEGER  NORD
 double precision x, poly_legendre( NORD)
 INTEGER lord
