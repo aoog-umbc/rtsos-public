@@ -3,15 +3,15 @@ OBJ=mathlib.o rttype_sos_rao_dg.o emis_sea.o SnowBRDF.o RossLiBRDF.o surface_gli
 F90=gfortran
 #F90=ifort
 
-#FCFLAG_GAS = -O3 -llapack -lblas
-FCFLAG_GAS = -g -fbounds-check -llapack -lblas
+FCFLAG_GAS = -O3 -llapack -lblas
+#FCFLAG_GAS = -g -fbounds-check -llapack -lblas
 #FCFLAG_GAS = -g -llapack -lblas
 
-#FCFLAG= -O3  -llapack -lblas
+FCFLAG= -O3  -llapack -lblas
 #FCFLAG=-real-size 64 -O3 -llapack -lblas
 #FCFLAG= -g -fbounds-check -llapack -lblas
 #FCFLAG= -g -fbounds-check -ffpe-trap=invalid,zero,overflow -fcheck=all -llapack -lblas
-FCFLAG= -g -fbounds-check -ffpe-trap=invalid,zero,overflow -finit-real=nan -fcheck=all -llapack -lblas
+#FCFLAG= -g -fbounds-check -ffpe-trap=invalid,zero,overflow -finit-real=nan -fcheck=all -llapack -lblas
 
 HDF5DIR = /opt/homebrew/Cellar/hdf5/1.14.3_1/
 HDF5LIB=-I$(HDF5DIR)/include
