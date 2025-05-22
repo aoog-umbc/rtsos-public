@@ -956,7 +956,7 @@ MAXLORD_Inelas=NQUADA_Inelas
        call date_and_time(values=time_array_1)
        finish_time = time_array_1 (5) * 3600 + time_array_1 (6) * 60 &
                       + time_array_1 (7) + 0.001 * time_array_1 (8)
-       write(*,*)'rtsosinit elapsed time =', finish_time-start_time
+!       write(*,*)'rtsosinit elapsed time =', finish_time-start_time
 
        CALL RTSOS(NREC,NDET,RECDATASTREAM,NCOLINPUT,NQUADA_Inelas,NQUADO_Inelas,     &
             DELTATAUAINPUT,DELTATAUOINPUT,NUMMIERT,MAXLORD_Inelas,MAXMORDINPUT,    &
@@ -1037,9 +1037,9 @@ DO IWV_BAND=NWV_BAND_START,NWV_BAND_END
   ELSE
 		NILS_AVG=NILS_HARP
   ENDIF
-WRITE(*,'("LOCINDXTMP,WV_BAND,NILS_AVG=",I6,f10.4,2x,I6)') &
-	LOCINDXTMP(1),WV_BAND(LOCINDXTMP(1)),NILS_AVG
 
+!WRITE(*,'("LOCINDXTMP,WV_BAND,NILS_AVG=",I6,f10.4,2x,I6)') &
+!	LOCINDXTMP(1),WV_BAND(LOCINDXTMP(1)),NILS_AVG
 !WRITE(*,'("ILS_DeltaWaveLength(1),ILS_DeltaWaveLength(NILS_AVG/2),ILS_DeltaWaveLength(NILS_AVG)=",3(2x,f10.4))') &
 !		   XK(1),XK(NILS_AVG/2),XK(NILS_AVG)
 !WRITE(*,'("ILS_PACE(1),ILS_PACE(NILS_AVG/2),ILS_PACE(NILS_AVG)=",3(2x,f10.4))') &
@@ -1108,7 +1108,7 @@ WRITE(*,'("LOCINDXTMP,WV_BAND,NILS_AVG=",I6,f10.4,2x,I6)') &
   ILS_INT_CONST=TRAPZOID(N_AVG_SIZE,XU,YU)
   ZU=FSUN_BAND*YU
   FSUN_BAND_AVG=TRAPZOID(N_AVG_SIZE,XU,ZU)
-write(*,*)'WAVELENGTH_NANOMETER,ILS_INT_CONST=',WAVELENGTH_NANOMETER,ILS_INT_CONST
+!write(*,*)'WAVELENGTH_NANOMETER,ILS_INT_CONST=',WAVELENGTH_NANOMETER,ILS_INT_CONST
 
   FSUN_BAND_AVG=FSUN_BAND_AVG/ILS_INT_CONST
 
@@ -1265,7 +1265,7 @@ write(*,*)'WAVELENGTH_NANOMETER,ILS_INT_CONST=',WAVELENGTH_NANOMETER,ILS_INT_CON
         call date_and_time(values=time_array_1)
               finish_time = time_array_1 (5) * 3600 + time_array_1 (6) * 60 &
                    + time_array_1 (7) + 0.001 * time_array_1 (8)
-        write(*,*)'rtsosinit elapsed time =', finish_time-start_time
+!        write(*,*)'rtsosinit elapsed time =', finish_time-start_time
 !! testing rtsosinit
 !open(unit=1,file='recdata_dk',Status='replace')
 !write(1,*)'WV(',IWV_BAND,')=',WV_BAND_HYPO(IWV_BAND)
@@ -3415,8 +3415,8 @@ ENDIF
 
 ALLOCATE(TAURfrac(NTLYERA),TAULYR(NTLYERA),LBDOLYR(NTLYERA))
 AEROSOL_ALBEDO=0.0d0
-write(*,*)'ScatX_AEROSOL=',ScatX_AEROSOL(1:2)
-write(*,*)'ExtX_AEROSOL=',ExtX_AEROSOL(1:2)
+!write(*,*)'ScatX_AEROSOL=',ScatX_AEROSOL(1:2)
+!write(*,*)'ExtX_AEROSOL=',ExtX_AEROSOL(1:2)
 AEROSOL_ALBEDO(1:NUMMIEUSE)=ScatX_AEROSOL(1:NUMMIEUSE)/ExtX_AEROSOL(1:NUMMIEUSE)
 DO IMIE=1,NUMMIEUSE
 	IF(AEROSOL_ALBEDO(IMIE)>1.0D0)THEN

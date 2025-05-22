@@ -98,8 +98,7 @@ END MODULE BFIT_PARAMETERS
 
     if((pmom(nstr-1)/(2*nstr-1) < pmom(nstr)/(2*nstr+1) .or. pmom(nstr)<1.0e-5) &
         .and. deltamlocal==1)then
-       write(*,*) 'pmom(nstr-1) < pmom(nstr) .or. pmom(nstr)<1.0e-5'
-       write(*,*) 'Delta M is used for this case'
+       write(*,*) 'pmom(nstr-1) < pmom(nstr) .or. pmom(nstr)<1.0e-5,Delta M is used'
        deltamlocal=0
     endif
 !!   renormalize
@@ -113,12 +112,11 @@ END MODULE BFIT_PARAMETERS
         enddo
         pmom(0)=1.0d0
     else
-       write(*,*) 'pmom(0)=', pmom(0)
-       write(*,*) 'warning pmom(0) is not equal to 1'
-       write(*,*) 'double check your phase function input'
+       write(*,'("warning pmom(0)=",E12.4," NOT equal to 1, Delta fit is used")')pmom(0)
+!       write(*,*) 'double check your phase function input'
 !       if (abs(pmom(0)-1.0d0) .gt.0.05) stop
-       write(*,*) 'Guessing it is due to infinite forward scattering peak'
-       write(*,*) 'Delta fit is used for this case'
+!       write(*,*) 'Guessing it is due to infinite forward scattering peak'
+!       write(*,*) 'Delta fit is used for this case'
        deltamlocal=2
     endif
 

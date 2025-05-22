@@ -617,7 +617,7 @@ ENDDO
   finish_time = time_array_0 (5) * 3600 + time_array_0 (6) * 60 &
            + time_array_0 (7) + 0.001 * time_array_0 (8)
 
- write(*,*)'PMOX integration elapsed time =', finish_time-start_time  
+  if(VERBOSE_FLAG) write(*,*)'PMOX integration elapsed time =', finish_time-start_time
 ENDIF !RAD_MAP IF
 ELSE ! DIRECT INTEGRATION
   NUMPHI=500
