@@ -1,5 +1,5 @@
 MODULE AEROSOL_MICROPHYSICAL_MODEL
-INTEGER,PARAMETER :: NWV_SF=16, NWV_JM=10
+INTEGER,PARAMETER :: NWV_SF=16, NWV_JM=11
 INTEGER,PARAMETER :: NAEROSOL=20,NRH=8,NFINEMODE=10
 
 DOUBLE PRECISION,SAVE :: WV_REF=-999.0d0 ! 0.55d0 or 0.870  ! additional wavelength at which aerosol optical depth is assigned.
@@ -11,7 +11,7 @@ DOUBLE PRECISION,DIMENSION(NWV_SF) :: WV_SF=(/0.30D0, 0.3371D0, 0.40D0, 0.4880D0
        2.D0, 2.25D0, 2.50D0/)
 
 DOUBLE PRECISION,DIMENSION(NWV_JM) :: WV_JM=(/0.305D0,0.311D0, 0.317D0,  0.325D0,  0.332D0,  0.368D0, &
-         0.440D0,  0.670D0, 0.870D0, 1.020D0/)
+         0.440D0,  0.670D0, 0.870D0, 1.020D0,2.50d0/)
 
 
 !SF data
@@ -53,7 +53,7 @@ DOUBLE PRECISION,DIMENSION(NWV_SF) ::    MI_WATER_SF=(/1.6D-8,8.45D-9,1.86D-9,9.
 !Real part of BrC is assumed to be 1.55.
 !https://www.nature.com/articles/srep37735
 DOUBLE PRECISION,DIMENSION(NWV_JM) :: MR_BRC_JM=(/1.55D0,1.55D0,1.55D0,1.55D0,1.55D0, &
-                            1.55D0,1.55D0,1.55D0,1.55D0,1.55D0/)
+                            1.55D0,1.55D0,1.55D0,1.55D0,1.55D0,1.55D0/)
 DOUBLE PRECISION,PARAMETER :: ALPHA=1.0D29, C=2.99792D8, WV_0=0.3D0, GAMMA_KK=2.0D13, K_KK_375=0.01235D0, K_KK_532=0.00243D0
 DOUBLE PRECISION :: V_0,V
 
@@ -62,12 +62,14 @@ DOUBLE PRECISION :: V_0,V
 
 !high temperature burn conditions fBrC=0.05
 !DOUBLE PRECISION, DIMENSION(NWV_JM):: MI_BRC_JM=(/0.4626D0, 0.3146D0, 0.3667D0, 0.1855D0, 0.2607D0, &
-!	 0.1501D0, 0.0501D0, 0.01051D0, 0.0334D0, 0.0042D0/)
+!	 0.1501D0, 0.0501D0, 0.01051D0, 0.0334D0, 0.0042D0,0.0042D0/)
+! last value is a gestimate at 2.5 micron assuming flat value after 1.02 micron
 
 !low temperature burn conditions fBrC=0.27 (best estimate)
 !(Please use this in the code as this corresponds to common burning conditions)
 !DOUBLE PRECISION, DIMENSION(NWV_JM):: MI_BRC_JM=(/0.0926D0,0.0663D0 ,0.0756D0, 0.0433D0, 0.0567D0, &
-!0.0370D0, 0.0193D0, 0.0122D0, 0.0163D0, 0.0111D02/)
+!0.0370D0, 0.0193D0, 0.0122D0, 0.0163D0, 0.0111D02, 0.0111D02/)
+! last value is a gestimate at 2.5 micronn assuming flat value after 1.02 micron
 
 !mode radius for different relative humidities (5)
 !RTROPOSPHERE,RRURALC, RURBANF,RURBANC are from table 2 of Shettle, Fenn report

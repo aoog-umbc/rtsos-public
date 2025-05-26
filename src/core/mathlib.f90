@@ -84,7 +84,7 @@ DOUBLE PRECISION :: RTMP,RTMP1
 LOGICAL :: mono_increase,mono_decrease
 
 mono_increase=XX(2)>XX(1)
-mono_decrease=.not. mono_increase
+mono_decrease=XX(2)<XX(1)
 IF((mono_increase .AND. (X<=XX(1).OR.X>=XX(NXX))) .OR. &
    (mono_decrease .AND. (X>=XX(1).OR.X<=XX(NXX))))       THEN
 
