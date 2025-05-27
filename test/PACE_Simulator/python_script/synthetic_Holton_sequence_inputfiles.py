@@ -1,21 +1,26 @@
 import numpy as np
 import random
+import sys
 
-def input_writer(filestrbase,chla,iaerosol,irh,theta0,tau_ref):
+def input_writer(filestrbase,chla,iaerosol,irh,theta0,tau_ref_hi):
     fileinput='input_ps_'+filestrbase
     f = open(fileinput, 'w')
     f.write("%f" % wndspd + '        #wind speed \n')
     f.write("%f" % theta0+ '       #THETA0 in degrees \n')
-	f.write("%f" % wv_pace_ref + '        #WV_PACE_REF \n')
-    f.write("%f" % tau_ref+ '        #TAU_REF \n')
-    f.write("%f" % Height_Particle + '    # scatteror height \n')
-    f.write("%d" % iaerosol+ '  #IAEROSOL=-99,-98,-1,1,20. -99,-98: read in from file; -1; Ahmad model with flexbile RH and FMF; 1-10 is Shettle and Fenn, 11-20 is Ahmad model \n')
+    f.write("%f" % wv_pace_ref + '        #WV_PACE_REF \n')
+    f.write("%f" % tau_ref_hi + '        #top layer aerosol TAU_REF \n')
+    f.write("%f" % Height_Particle_hi + '    # top layer scatteror height \n')
+    f.write("%f" % Height_Variance_Particle_hi + '    # top layer scatteror height variance \n')
+    f.write("%f" % tau_ref_low + '        #lower layer aerosol TAU_REF \n')
+    f.write("%f" % Height_Particle_low + '    # lower layer scatteror height \n')
+    f.write("%f" % Height_Variance_Particle_low + '  # lower layer scatteror height variance \n')
+    f.write("%d" % Aerosol_Model[iaerosol]+ '  #IAEROSOL=-99,-98,-1,1,20. -99 read aerosol pmhx in from file; -98 read water cloud phmx from file; -1 Ahmad model with flexbile RH and FMF; 1-10 is Shettle and Fenn, 11-20 is Ahmad model \n')
     f.write("%f" % AeroFMF + '        #Aerosol fine mode fraction, only used when Aerosol_Model[iaerosol]==-1 \n')
-    f.write("%f" % RH[irh]+ '    #Relative Humidity IRH=1,5, RH=[0.30,0.50,0.70,0.75,0.80,0.85,0.90,0.95] \n')
-    f.write("%d" % ocean_case_select + '   #OCEAN_CASE_SELECT, case 0(atmosphere only), case 1 [Chla] parameterization, case 2 [Chla]+Sediment, case 3: seven parameter model\n')
+    f.write("%f" % RH[irh]+ '        #Relative Humidity IRH=1,8, RH=[0.30,0.50,0.70,0.75,0.80,0.85,0.90,0.95] \n')
+    f.write("%d" % bottom_case_select[iocean] + '   #bottom_case_select, case -200-203 Land; 0(atmosphere only), case 1 [Chla] parameterization, case 2 [Chla]+Sediment, case 3: seven parameter model\n')
     f.write("%f" % albedo_ground + '   #albedo_ground \n')
     f.write("%f" % water_depth_max + '   #water_depth_max \n')
-    f.write("%f" % chla+ '        #CHLa \n')
+    f.write("%f" % chla             + '        #CHLa \n')
     f.write("%f" % phytoplankton_index_refraction + '        #PHYTOPLANKTON_INDEX_REFRACTION \n')
     f.write("%f" % phytoplankton_spectral_slope + '        #PHYTOPLANKTON_SPECTRAL_SLOPE\n')
     f.write("%f" % sediment_index_refraction + '        #SEDIMENT_INDEX_REFRACTION \n')
@@ -31,7 +36,7 @@ def input_writer(filestrbase,chla,iaerosol,irh,theta0,tau_ref):
     f.write("%d" % nquadainput + '        #NQUADAINPUT \n')
     f.write("%d" % nquadoinput + '        #NQUADOINPUT \n')
     f.write("%d" % MAXMORDINPUT + '        #MAXMORDINPUT \n')
-	f.write("%d" % NTHETAV + '        #NTHETAV \n')
+    f.write("%d" % NTHETAV + '        #NTHETAV \n')
     f.write("%d" % NPHIV + '        #NPHIV \n')
     f.write("%d" % chla_homogeneity + '        #CHLA_HOMOGENEITY, 1=.true. 0=.false. \n')
     f.write("%d" % ocean_raman_flag + '        #OCEAN_RAMAN_FLAG, 1=.true. 0=.false. \n')
@@ -43,7 +48,7 @@ def input_writer(filestrbase,chla,iaerosol,irh,theta0,tau_ref):
     f.write("%d" % npq_flag + '        #NPQ_FLAG, 1=.true. 0=.false. \n')
     f.write("%d" % ocean_phmx_one + '        #OCEAN_PHMX_ONE, 1=.true. 0=.false. \n')
     f.write("%d" % atmos_zero + '        #atmos_zero, 1=.true. 0=.false. \n')
-    f.write("%d" % SUNGLINT_INPUT + '        #SUNGLINT_INPUT, 0 include sun glint 1 no sun glint \n')
+    f.write("%d" % SUNGLINT_INPUT     + '        #SUNGLINT_INPUT, 0 include sun glint 1 no sun glint \n')
     f.write("%d" % gas_abs_flag + '        #GAS_ABS_FLAG, 1=.true. 0=.false. \n')
     f.write("%f" % OZONE_COLUMN + '       #ozone column amount in Dobson Unit \n')
     f.write("%f" % H2O_COLUMN + '       #water vapor column amount in cm \n')
@@ -55,29 +60,51 @@ def input_writer(filestrbase,chla,iaerosol,irh,theta0,tau_ref):
     f.write("%s" % aux_dir +'    #aux_dir \n')
     f.write("%s" % gas_absorption_coeff_dir +'    #gas_absorption_coeff_dir \n')
     f.write("%s" % atmos_profile_filename +'\n')
-    f.write("%s" % aerosol_phasematrix_file +'\n')
+    f.write("%s" % aerosol_phasematrix_file_hi +'\n')
+    f.write("%s" % aerosol_phasematrix_file_low +'\n')
     f.write("%s" % 'output_ps_' + filestrbase+'\n')
     f.close
 
-wndspd=5.0
-ocean_case_select=1
-albedo_ground=0.3
 
-monochromatic_flag=0
+#tau_ref_hi=0.05
+tau_ref_low=0.0
+
+Height_Particle_hi=12.0
+Height_Particle_low=4.0
+
+Height_Variance_Particle_hi=2.0
+Height_Variance_Particle_low=2.0
+
+
 atmos_zero=0
 gas_abs_flag=1
 wv_seg_flag=0
 SUNGLINT_INPUT=0
 
-water_depth_max=200.0
 
 RH=np.array([0.30,0.50,0.70,0.75,0.80,0.85,0.90,0.95])
-#Aerosol_Model=np.array([11,14,17,20.0])
+Aerosol_Model=([-99,-98, -97, -1,11,12,13,14,15,16,17,18,19,20])
 AeroFMF=random.random()
 
-Height_Particle=3.0
+#bottom_case_select=np.array([-203 -202, -201, -200, 0, 1, 2, 3])
+#                              !==-203 Ross Li Land Reflectance
+#                              !==-202 Snow Reflectance
+#                              !==-201 mRPV land Reflectance
+#                              !==-200 Land Lambertian Reflectance
+#                              !==0 no ocean water body
+#                              !==1 CASE 1 WATER IOPS
+#                              !==2 CASE 2 WATER IOPS
+#							  !==3 Bio-2 model in polarimeter fitting
+# negative values mean land surface, please use another script
+# 0: atmosphere bounded by ocean surface only
+bottom_case_select=np.array([0,1,-203])
+iocean=1
+wndspd=5.0
+albedo_ground=0.3
+water_depth_max=200.0
 
-# the following parameters are used in ocean_case_select==2
+
+# the following parameters are used in bottom_case_select==2
 # chla, phytoplankton_index_refraction,phytoplankton_spectral_slope,
 #sediment_index_refraction,sediment_spectral_slope,sediment_concentration
 phytoplankton_index_refraction=1.02
@@ -86,7 +113,7 @@ sediment_index_refraction=1.2
 sediment_spectral_slope=4.0
 sediment_concentration=0.0
 
-# the following parameters are used in ocean_case_select ==3, the seven parameter model
+# the following parameters are used in bottom_case_select ==3, the seven parameter model
 # chla, adg440, bbp660_BackscatterCoeff,Bp660_BackscatterFraction,Sdg,Sbp,S_Bp
 adg440=1.0                         #adg440 (1/m), range: 0.0:2.5
 bbp660_BackscatterCoeff=0.05       #bbp660 (1/m), range 0:0.1
@@ -108,7 +135,7 @@ ocean_fchla_flag=1
 ocean_fcdom_flag=1
 
 ap_select = 1
-
+monochromatic_flag=0
 hyspectral_flag=0
 npq_flag=0
 
@@ -133,7 +160,9 @@ gas_absorption_coeff_dir='/Users/pwzhai/Research/RT/Gas_Absorption_Coefficients/
 
 atmos_profile_base='afglus'
 atmos_profile_filename=atmos_profile_base+'.dat'
-aerosol_phasematrix_file='output_flexible_nmode3_fmixing_2_fmfrac_0.500_dmfrac_0.200_cmfrac_0.300_dmsfrac_0.600_fwatersol_0.600_fBrc_0.100_fsoot_0.300.h5'
+
+aerosol_phasematrix_file_hi='output_flexible_aerosol_fullwave.h5'
+aerosol_phasematrix_file_low='output_flexible_aerosol_fullwave.h5'
 
 #possible atmosphere profiles are:
 #afglus.dat
@@ -195,15 +224,15 @@ for j in range(n_sample):
     r=hs[j] #gives 1d array of 5 independent halton terms
     chla=0.01+r[0]*(10-0.01)# chla range=[0.01,10]
     theta0=0+r[1]*(85-0)#theta0 range=[0,85]
-    tau_ref=0+r[2]*(0.4-0)#tau_ref range=[0,0.4]
-    irh=np.rint(r[3]*(8-1))#irh range=[0,7]
-    iaerosol=np.rint(11+r[4]*(20-11))#iaerosol range=[11,20]
+    tau_ref_hi=0+r[2]*(0.4-0)#tau_ref range=[0,0.4]
+    irh=np.int64(r[3]*(8-1))#irh range=[0,7]
+    iaerosol=np.int64(5+r[4]*(14-5))#iaerosol range=[11,20]
     filestrbase='chla%05.2f' % chla \
                +'iaerosol%d' % iaerosol \
                +'rh%05.2f' % RH[irh] \
                +'theta0%05.2f' %theta0 \
-               +'tau_ref%05.2f' %tau_ref
-    input_writer(filestrbase,chla,iaerosol,irh,theta0,tau_ref)
+               +'tau_ref_hi%05.2f' %tau_ref_hi
+    input_writer(filestrbase,chla,iaerosol,irh,theta0,tau_ref_hi)
 #
 #
 
