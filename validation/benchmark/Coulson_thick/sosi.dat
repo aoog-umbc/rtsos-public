@@ -1,0 +1,41 @@
+-1000       0.0        0.0    0.0  0.0  0.0   0.0  #detector, blank number,blank number,blank number
+1           1.0        1.0    0.0  0.0  0.0   0.0        #IPT,TAU,LBDOM,EFLRSC
+-1000       0.0        0.0    0.0  0.0  0.0   0.0  #detector, blank number,blank number,blank number
+-200        0.8        1.0    1.5  0.0  0.0   0.0
+40          30         62                     # NCOL, NQUADA,# NQUADO
+1           3          3                     #nummie,MAXLORD,MAXMORD
+ray.pmtx                                     # (Rayleigh) SINGLE SCATTERING INPUT FILE NAME
+
+
+#########################
+-201        0.8       1.0     0.0   0.0   1.5  0.0    #pBRDF, a, k, b, eta,re,im
+-200        0.8       1.0     1.5   0.0   0.0  0.0
+
+# For Mie phase matrix, IPT has to be bigger than 0.
+
+# -1000  is reserved for detector.
+# if -1000 is used, the second number is the optical depth where the detector is located.
+# if want to measuer radiance just under water, make taudet = tau oi +small number
+# the third number will be ignored.
+
+# IF EFLRSC/=0 FOR THE OCEAN LAYER
+# fluorescence flag WILL BE TURN ON
+# EFLRSC IN OCEAN WILL BE THE EMITTING IRRADIANCE OF THE FLUORESCENCE.
+
+#-100 is reserved for air-sea interface.
+#-100 w re im blank, blank, blank
+# w: the wind speed, 
+# re and im: real and imaginary refrective index
+
+#-200 is reserved for lambertian bottom.
+#-200, rho,flam,re, im,blank,blank
+# rho: lambertian single scattering albedo of the surface
+# flam: fraction of the incident irradiance is reflected.
+# re and im are the real and imaginary refractive index of the specular reflection if flam<1
+
+#-201 is reserved for unified pBRDF formula See Eq. (18) Feng Xu et al, OL, 2011 but with p(\mu) changed to Breon model p(\mu)=\mu/\pi.
+#-201 a k b eta rm im
+
+# NO system configuration is allowed beyond bottom.
+# Don't use numbers smaller than -1000 for ipt.
+#for additional forms of layers, more negative number could be used.

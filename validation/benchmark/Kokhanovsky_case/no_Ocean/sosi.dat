@@ -1,0 +1,65 @@
+-1000       0.0        0.0        0.0  0.0  0.0  0.0    #detector, blank,blank,blank
+1           0.3262     1.0        0.0  0.0  0.0  0.0    #IPT,TAU,LBDOM,EFLRSC
+-1000       0.0        0.0        0.0  0.0  0.0  0.0    #detector, blank,blank,blank
+-200        0.0        1.0        1.5  0.0  0.0  0.0    #Lambertian, albedo, flam,blank
+40          200      220                   # NCOL, NQUADA,# NQUADO  
+1           200      60                    #nummie,MAXLORD,MAXMORD
+lognormalAA0p3BB0p8464.pmtx
+
+ray.coeff
+
+
+
+                                     # (Rayleigh) SINGLE SCATTERING INPUT FILE NAME
+fineaerosol.coeff                              #fine aerosol model in Lenoble's paper
+wv412BSCATP0p02Bbp0p002.coeff
+
+
+ffv_wv555_chl0p3.coeff
+
+
+ff_voss.coeff
+petzhou.coeff
+ffv_wv555_chl3.coeff
+ffv_wv555_chl0p03.coeff
+ffv_wv555_chl0p3.coeff
+fineaerosol.coeff                              #fine aerosol model in Lenoble's paper
+
+
+2           1.0        1.0         0.0        #IPT,TAU,LBDOM, BLANK NUMBER for atmos. layers
+
+
+ffv_wv412_chl0p03.coeff
+ffv_wv412_chl0p3.coeff
+ffv_wv412_chl3.coeff
+
+hg0p9185.coefftrunc                            #H-G phase function + Rayleigh matrix with truncation
+hg0p9185.coeff                                 #H-G phase function + Rayleigh matrix
+ffvoss_bb0p0183.coefftrunc                     #Fourier-Forant Voss Phase matrix
+ 
+
+#########################
+2           0.3         1.00        0.0         #IPT,TAU,LBDOM, BLANK NUMBER for atmos. layers
+
+# For Mie phase matrix, IPT has to be bigger than 0.
+
+# -1000  is reserved for detector.
+# if -1000 is used, the second number is the optical depth where the detector is located.
+# if want to measuer radiance just under water, make taudet = tau oi +small number
+# the third number will be ignored.
+
+# IF EFLRSC/=0 FOR THE OCEAN LAYER
+# fluorescence flag WILL BE TURN ON
+# EFLRSC IN OCEAN WILL BE THE EMITTING IRRADIANCE OF THE FLUORESCENCE.
+
+#-100 is reserved for air-sea interface.
+#if -100 is used, the following two numbers are the wind speed and refrective index
+# the current plan does not included wind ruffled case.  reserved anyway.
+
+#-200 is reserved for lambertian bottom.
+#if -200 is used, the second number is single scattering albedo, 
+# the third number will be ignored
+
+# NO system configuration is allowed beyond bottom.
+# Don't use numbers smaller than -1000 for ipt.
+#for additional forms of layers, more negative number could be used.

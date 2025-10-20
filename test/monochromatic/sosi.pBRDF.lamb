@@ -1,0 +1,51 @@
+-1000       0.0   0.0    0.0   0.0  0.0    0.0      #detector, blank number,blank number,blank number
+1           0.1   1.0    0.0   0.0  0.0    0.0      #IPT,TAU,LBDOM,wavelength,Temperature,EFLRSC,BLANK
+-1000       0.0   0.0    0.0   0.0  0.0    0.0      #detector, blank number,blank number,blank number
+-201        0.99  1.0    0.0   0.0  1.34    0.0     #polarized bottom, pBRDFa,pBRDFk,pBRDFb,pBRDFe,NMBRE,NMBIM
+40          30    60                                # NCOL, NQUADA,# NQUADO
+1           3      3                                #nummie,MAXLORD,MAXMORD
+RayDepol0.pmtx
+
+L60gamma_a1.05b1.00Wv0.78.pmtx
+lognormalAA0p3BB0p8464.pmtx
+
+-101        7.0        1.34      0.0    0.0  0.0  0.0      #water interface bottom, windspeed, re(mwater), im(mwater),glint_flag,blank number
+-201        1.0        1.0       1.5    0.0  0.0  0.0     #polarized bottom, pBRDFa,pBRDFk,pBRDFb,pBRDFe,NMBRE,NMBIM
+-202        0.99       0.0       0.0    0.0  0.0  0.0     #snow surface albedo, blank, blank, blank, blank, blank
+/Users/pwzhai/Research/RT/DSCOVR/SnowBRDF_Data/brdfPaperMaterial/  #snow brdf file path
+
+-203        0.0399  0.0245  0.0072    0.1  1.5  0.0     #Ross-Li, fiso, fvol, fgeo, Bpol, NMBRE,NMBIM
+
+#(0.0399  0.0245  0.0072) parameters are from
+#Lorente, A., Boersma, K. F., Stammes, P., Tilstra, L. G., Richter, A., Yu, H., Kharbouche, S., and Muller, J.-P.: The importance of surface reflectance anisotropy for cloud and NO2 retrievals from GOME-2 and OMI, Atmos. Meas. Tech., 11, 4509–4529, https://doi.org/10.5194/amt-11-4509-2018, 2018.
+
+glint_flag=0, sunglint turn on.
+glint_flag=1, sunglint turn off.
+
+#########################
+
+# For Mie phase matrix, IPT has to be bigger than 0.
+
+# -1000  is reserved for detector.
+# if -1000 is used, the second number is the optical depth where the detector is located.
+# if want to measuer radiance just under water, make taudet = tau oi +small number
+# the third number will be ignored.
+
+# IF EFLRSC/=0 FOR THE OCEAN LAYER
+# fluorescence flag WILL BE TURN ON
+# EFLRSC IN OCEAN WILL BE THE EMITTING IRRADIANCE OF THE FLUORESCENCE.
+# fluorescence calculation can only be done with a spectial main program
+# because it involves multiple wavelength calculations.
+# This is why that EFLRSC is always 0 in this file.
+
+#-100 is reserved for air-sea interface.
+#if -100 is used, the following two numbers are the wind speed and refrective index
+# the current plan does not included wind ruffled case.  reserved anyway.
+
+#-200 is reserved for lambertian bottom.
+#if -200 is used, the second number is single scattering albedo, 
+# the third number will be ignored
+
+# NO system configuration is allowed beyond bottom.
+# Don't use numbers smaller than -1000 for ipt.
+#for additional forms of layers, more negative number could be used.

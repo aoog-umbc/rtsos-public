@@ -1,0 +1,40 @@
+LICENSE
+
+RTSOS – Radiative Transfer model based on Successive Orders of Scattering
+Copyright © 2025 Pengwang Zhai, University of Maryland Baltimore County
+1. License Summary
+RTSOS is made available for research and educational purposes under the terms of the Creative Commons Attribution–NonCommercial 4.0 International License (CC BY-NC 4.0).
+You may freely use, modify, and share this software for non-commercial purposes, provided that you give appropriate credit and include this license notice in any redistribution.
+Commercial use (including use in proprietary or revenue-generating products, consulting services, or contract research for profit) is not permitted without prior written permission.
+For commercial licensing inquiries, please contact:
+📧 Pengwang Zhai – [pwzhai@umbc.edu] 
+2. License Terms (CC BY-NC 4.0)
+You are free to:
+Share — copy and redistribute the material in any medium or format
+Adapt — remix, transform, and build upon the material
+under the following terms:
+Attribution — You must give appropriate credit, provide a link to the license, and indicate if changes were made.
+Example citation:
+Zhai, P. (2025). RTSOS: Radiative Transfer model based on Successive Orders of Scattering (Version 1.0). Zenodo. https://doi.org/xx.xxxx/zenodo.xxxxxx
+NonCommercial — You may not use the material for commercial purposes.
+No additional restrictions — You may not apply legal terms or technological measures that legally restrict others from doing anything the license permits.
+The full license text is available at:
+🔗 https://creativecommons.org/licenses/by-nc/4.0/legalcode
+3. Disclaimer of Warranty
+This software is provided “as is”, without warranty of any kind, express or implied, including but not limited to the warranties of merchantability, fitness for a particular purpose, and non-infringement.
+In no event shall the author or copyright holder be liable for any claim, damages, or other liability arising from the use of this software.
+4. Citation and Acknowledgment
+If you use RTSOS in a publication or presentation, please acknowledge:
+Zhai, P. (2025). RTSOS: Radiative Transfer model based on Successive Orders of Scattering (Version 1.0). University of Maryland Baltimore County. Available under the CC BY-NC 4.0 License.
+5. Commercial Licensing Clause
+Commercial entities or projects seeking to use RTSOS in any form that contributes to a product, service, or revenue-generating activity must obtain a separate commercial license.
+Please contact the author (Pengwang Zhai, UMBC) to discuss terms for such use.
+6. Summary (non-legal plain language)
+Use Case	Permitted?	Notes
+Academic research	✅	Cite and acknowledge the author
+Teaching or training	✅	Credit required
+Open-source collaboration (non-commercial)	✅	Allowed under CC BY-NC 4.0
+Government or nonprofit research	✅	Allowed
+Commercial R&D, software, or consulting use	🚫	Requires a commercial license
+
+End of License
