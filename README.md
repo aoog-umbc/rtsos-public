@@ -4,23 +4,22 @@ This software is released under the Creative Commons Attribution–NonCommercial
 You are free to use, modify, and share it for research and educational purposes, provided that you give appropriate credit.
 Commercial use is not permitted without prior written consent from the author.
 📧 For commercial licensing inquiries, contact Pengwang Zhai at [pwzhai@umbc.edu].
-🔗 Full license text: Creative Commons BY-NC 4.0
+🔗 Full license text: Creative Commons BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/)
 
-RTSOS can solve multiple scattering radiative transfer equation from UV, visible, to infrared. It can handle atmosphere-land or atmosphere-ocean coupled systems. The atmosphere can be a mixture of molecules, aerosols, and cloud droplets. The land bottom can be Lambertian, snow surface, Ross-Li, and a number of other surfaces. The ocean waters are modeled by a mixture of pure ocean water, phytoplankton, and colored dissolved, organic matter, and other hydrsols. The sensors can be placed at arbitrary levels in the Earth system. The output of the sensor can include the full polarized Stokes parameters (I, Q, U, V). For more information, see References at the end of this document as well as the documentations located at 
-/Documentation/Describtion_of_input_files
-
+RTSOS can solve multiple scattering radiative transfer equation from UV, visible, to infrared. It can handle atmosphere-land or atmosphere-ocean coupled systems. The atmosphere can be a mixture of molecules, aerosols, and cloud droplets. The land bottom can be Lambertian, snow surface, Ross-Li, and a number of other surfaces. The ocean waters are modeled by a mixture of pure ocean water, phytoplankton, and colored dissolved, organic matter, and other hydrsols. The sensors can be placed at arbitrary levels in the Earth system. The output of the sensor can include the full polarized Stokes parameters (I, Q, U, V). For more information, see References at the end of this document.
 
 
+PACE simulator is a wrapper build around the monochromatic RTSOS, which has a list of build-in aerosol and ocean inherent optical properties. A publication on the PACE simulator is published on Frontiers in Remote Sensing (Zhai et al., 2022). 
 
-PACE simulator RSR files:
+A collection of data files which are needed for simulating the PACE instruments can be downloaded at:
+url://
 
-PACE_OCI_L1B_LUT_RSR_baseline_1.1.1.nc
-HARP2_RSR_Composite_v01b.csv
-spexone_isrf.nc
+which include: PACE simulator RSR files: PACE_OCI_L1B_LUT_RSR_baseline_1.1.1.nc, HARP2_RSR_Composite_v01b.csv, spexone_isrf.nc (https://oceancolor.gsfc.nasa.gov/data/pace/characterization/).
 
-which can be downloaded from:
+A gas absorption lookup table is built for the PACE sensors, which can be downloaded here:
 
-https://oceancolor.gsfc.nasa.gov/data/pace/characterization/
+
+RTSOS and the PACE simulator requires a fortran 90 compiler (https://gcc.gnu.org/fortran/), hdf5 (https://www.hdfgroup.org/solutions/hdf5/) and lapack (https://www.netlib.org/lapack/) libraries.
 
 Section 1: COMPILE
 The steps to use it is: compile the package, configure the input files, and run the code with the executable file.
@@ -28,6 +27,8 @@ To compile, open a terminal and go to:
 $cd RTSOS/SOS_Callable/compile
 then try to compile the monochromatic code:
 $make
+If you get an error of missing fortran compiler, examine "Makefile" and specify the correct fortran command to F90.
+
 If this is good, then edit the PACE Simulator make file to set the hdf5 library paths:
 $emacs makefile_PACE_Simulator_DoubleK
 
@@ -42,6 +43,9 @@ This will compile the pace simulator.
 
 Section 2: RUN the MODELS
 
+For monochromatic simulation, users are referred to the documentations located at 
+/Documentation/Describtion_of_input_files/SOS_io.pdf
+
 Section 2.1 PACE Simulator
 Next we may try out the pace simulator:
 $cp rtsos_PACE_Simulator_DoubleK.exe ../test/PACE_Simulator/
@@ -51,7 +55,7 @@ Check out “notes_to_run_pace_simulator” for the use of
 pace simulator, which is located in
 RTSOS/SOS_Callable/test/PACE_Simulator/
 In the same folder you may also find a folder “python_script”
-which contains three python scripts including “pace_simulator_inputfile_prepare.py”, 
+which contains three python scripts including “pace_simulator_twolayer_inputfile_land.py”, and "pace_simulator_twolayer_inputfile_ocean.py"
 which can be used to generate a batch of pace simulator input files.
 
 Current version can conveniently generate synthetic datasets for OCI, HARP, and SPEX
@@ -65,7 +69,7 @@ and IAEROSOL=11-20 is Zia’s new aerosol model.
 IRH=1-8 where RH(IRH)=(/0.30,0.50,0.70,0.75,0.80,0.85,0.90,0.95/).
 Ziauddin Ahmad, Bryan A. Franz, Charles R. McClain, Ewa J. Kwiatkowska, Jeremy Werdell, Eric P. Shettle, and Brent N. Holben, "New aerosol models for the retrieval of aerosol optical thickness and normalized water-leaving radiances from the SeaWiFS and MODIS sensors over coastal regions and open oceans," Appl. Opt. 49, 5545-5560 (2010)
 
-
+For ocean simulations, ocean inherent optical properties are documented in Zhai et al., (2017, 2018, 2022).
 
 References:
 Zhai, P., Hu, Y., Trepte, C. R., Lucker, P. L. (2009). A vector radiative transfer model for coupled atmosphere and ocean systems based on successive order of scattering method. Optics express, 17(4), 2057-2079.
