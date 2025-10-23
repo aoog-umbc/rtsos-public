@@ -148,11 +148,19 @@ Available aerosol modes:
 		For nmode=3 rf1 and cmsfrac do not exist
 
 References:
+
 Zhai, P., Hu, Y., Trepte, C. R., Lucker, P. L. (2009). A vector radiative transfer model for coupled atmosphere and ocean systems based on successive order of scattering method. Optics express, 17(4), 2057-2079.
+
 Zhai, P., Hu, Y., Chowdhary, J., Trepte, C. R., Lucker, P. L., Josset, D. B. (2010). A vector radiative transfer model for coupled atmosphere and ocean systems with a rough interface. Journal of Quantitative Spectroscopy and Radiative Transfer, 111(7), 1025-1040.
+
 Zhai, P., Hu, Y., Josset, D. B., Trepte, C. R., Lucker, P. L., Lin, B. (2013). Advanced angular interpolation in the vector radiative transfer for coupled atmosphere and ocean systems. Journal of Quantitative Spectroscopy and Radiative Transfer, 115, 19-27.
+
 Zhai, P., Hu, Y., Winker, D. M., Franz, B., Boss, E. (2015). Contribution of Raman scattering to polarized radiation field in ocean waters. Optics Express, 23(18), 23582-23596.
+
 Zhai, P., Hu, Y., Winker, D. M., Franz, B., WERDELL, J., BOSS, E. (2017). Inelastic vector radiative transfer solution in ocean waters. Optics Express, 25, A223-A239. 
+
 Zhai, P., Boss, E., Franz, B., Werdell, J., Hu, Y. (2018). Radiative transfer modeling of phytoplankton fluorescence quenching  processes. MDPI Remote Sensing, 10(8), 1039.
+
 Zhai, P., Hu, Y. (2022). An improved pseudo spherical shell algorithm for vector radiative transfer. Journal of Quantitative Spectroscopy and Radiative Transfer, 282, 108132. https://www.sciencedirect.com/science/article/pii/S0022407322000693.
+
 Zhai, P., Gao, M., Franz, B. A., Werdell, P. J., Ibrahim, A., Hu, Y., Chowdhary, J. (2022). A Radiative Transfer Simulator for PACE: Theory and Applications. Frontiers in Remote Sensing, 3. https://www.frontiersin.org/article/10.3389/frsen.2022.840188.
