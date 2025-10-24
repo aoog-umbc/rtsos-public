@@ -1,6 +1,6 @@
 # ===============================================================
 #  RTSOS – Radiative Transfer model based on Successive Orders of Scattering
-#  Copyright (C) 2025  Pengwang Zhai, University of Maryland Baltimore County
+#  Copyright (C) 2025  Pengwang Zhai
 #
 #  Licensed under the Creative Commons Attribution–NonCommercial 4.0
 #  International License (CC BY-NC 4.0).
@@ -9,7 +9,7 @@
 #  Commercial use requires written permission from the author.
 #
 #  Full license: https://creativecommons.org/licenses/by-nc/4.0/
-#  Contact: Pengwang Zhai  |  [insert your UMBC or preferred email]
+#  Contact: Pengwang Zhai  |  [pwzhai@gmail.com]
 # ===============================================================
 
 OBJ=mathlib.o rttype_sos_rao_dg.o emis_sea.o SnowBRDF.o RossLiBRDF.o surface_glint.o Save_Ocean_Rad.o bfit.o rtsos_rao_dg.o bessel.o rtspecfunc.o deltafit.o main.o

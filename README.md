@@ -1,9 +1,9 @@
 RTSOS — Radiative Transfer model based on Successive Orders of Scattering
-Copyright © 2025 Pengwang Zhai.
+Copyright © 2025 Pengwang Zhai. \
 This software is released under the Creative Commons Attribution–NonCommercial 4.0 International (CC BY-NC 4.0) license.
 You are free to use, modify, and share it for research and educational purposes, provided that you give appropriate credit.
 Commercial use is not permitted without prior written consent from the author.
-📧 For commercial licensing inquiries, contact Pengwang Zhai at [pwzhai@umbc.edu].
+📧 For commercial licensing inquiries, contact Pengwang Zhai at [pwzhai@gmail.com].
 🔗 Full license text: Creative Commons BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/)
 
 RTSOS can solve multiple scattering radiative transfer equation from UV, visible, to infrared. It can handle atmosphere-land or atmosphere-ocean coupled systems. The atmosphere can be a mixture of molecules, aerosols, and cloud droplets. The land bottom can be Lambertian, snow surface, Ross-Li, and a number of other surfaces. The ocean waters are modeled by a mixture of pure ocean water, phytoplankton, and colored dissolved, organic matter, and other hydrsols. The sensors can be placed at arbitrary levels in the Earth system. The output of the sensor can include the full polarized Stokes parameters (I, Q, U, V). For more information, see References at the end of this document.
