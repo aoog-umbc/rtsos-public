@@ -1,5 +1,5 @@
 RTSOS — Radiative Transfer model based on Successive Orders of Scattering
-Copyright © 2025 Pengwang Zhai
+Copyright © 2025 Pengwang Zhai.
 This software is released under the Creative Commons Attribution–NonCommercial 4.0 International (CC BY-NC 4.0) license.
 You are free to use, modify, and share it for research and educational purposes, provided that you give appropriate credit.
 Commercial use is not permitted without prior written consent from the author.
