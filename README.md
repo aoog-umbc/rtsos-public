@@ -31,14 +31,23 @@ The other is PACEDATADIR/Data/, which contains the absorption coefficients of pu
 RTSOS and the PACE simulator requires a fortran 90 compiler (https://gcc.gnu.org/fortran/), hdf5 (https://www.hdfgroup.org/solutions/hdf5/) and lapack (https://www.netlib.org/lapack/) libraries.
 
 Section 1: COMPILE
+
 The steps to use it is: compile the package, configure the input files, and run the code with the executable file.
+
 To compile, open a terminal and go to:
-$cd RTSOS/SOS_Callable/compile
+
+$cd RTSOSDIR/compile
+
+where RTSOSDIR is where you clone this repo.
+
 then try to compile the monochromatic code:
+
 $make
+
 If you get an error of missing fortran compiler, examine "Makefile" and specify the correct fortran command to F90.
 
 If this is good, then edit the PACE Simulator make file to set the hdf5 library paths:
+
 $emacs makefile_PACE_Simulator_DoubleK
 
 HDF5DIR = /usr/local/Cellar/hdf5@1.10/1.10.7
@@ -47,8 +56,10 @@ H5FC=$(HDF5DIR)/bin/h5fc
 LIBSHDF= $(HDF5LIB) -L$(HDF5DIR)/lib/ -lhdf5 -lhdf5_fortran
 
 If these are correctly set, you can compile the pace simulator:
+
 $make clean
 $make -f makefile_PACE_Simulator_DoubleK
+
 This will compile the pace simulator.
 
 Section 2: RUN the MODELS
@@ -57,14 +68,17 @@ For monochromatic simulation, users are referred to the documentations located a
 /Documentation/Describtion_of_input_files/SOS_io.pdf
 
 Section 2.1 PACE Simulator
+
 Next we may try out the pace simulator:
+
 $cp rtsos_PACE_Simulator_DoubleK.exe ../test/PACE_Simulator/
 $cd ../test/PACE_Simulator/
 $mkdir alg_test
 
 You can now generate the input files for the simulator with the python scripts for ocean or land surfaces, respectively:
-PACE_Simulator/python_script/python_script/pace_simulator_twolayer_inputfile_land.py
-PACE_Simulator/python_script/python_script/pace_simulator_twolayer_inputfile_ocean.py
+
+test/PACE_Simulator/python_script/python_script/pace_simulator_twolayer_inputfile_land.py
+test/PACE_Simulator/python_script/python_script/pace_simulator_twolayer_inputfile_ocean.py
 
 Study these two files before you execute them. Most importantly, change aux_dir and gas_absorption_coeff_dir to be:
  
@@ -81,12 +95,19 @@ where "input_rt_pace.txt" is the input file to the simulator you generated in St
 Current version can conveniently generate synthetic datasets for OCI, HARP, and SPEX
 for flexible datasets for OCI, HARP, and SPEX for flexible atmospheric and ocean condition. 
 The input parameters are specified in input files.
+
 Right now the aerosol models are: IAEROSOL=1-20, where
 IAEROSOL=1-10 is the Shettle&Fenn model:
+
 E. P. Shettle and R. W. Fenn, “Models for the aerosols of the lower atmosphere and the effects of humidity variations on their optical properties,” AFGL-TR 790214, U. S. Air Force Laboratory, Hanscom Air Force Base, Mass. (1979).
 
-and IAEROSOL=11-20 is Zia’s new aerosol model. 
+and 
+
+IAEROSOL=11-20; 
 IRH=1-8 where RH(IRH)=(/0.30,0.50,0.70,0.75,0.80,0.85,0.90,0.95/).
+
+are the new operational aerosol models currently used in the atmospheric correction at GSFC.
+
 Ziauddin Ahmad, Bryan A. Franz, Charles R. McClain, Ewa J. Kwiatkowska, Jeremy Werdell, Eric P. Shettle, and Brent N. Holben, "New aerosol models for the retrieval of aerosol optical thickness and normalized water-leaving radiances from the SeaWiFS and MODIS sensors over coastal regions and open oceans," Appl. Opt. 49, 5545-5560 (2010)
 
 For ocean simulations, ocean inherent optical properties are documented in Zhai et al., (2017, 2018, 2022).
@@ -95,18 +116,25 @@ Section 2.2 Single scattering matrix code
 
 If you used IAEROSOL=-99 in the pace simulator input file, you will need to prepare the aerosol phase matrix. A tool was written by Neranga K. Hannadige (https://scholar.google.com/citations?user=0lAwqNsAAAAJ&hl=en) to generate the input scattering matrix files for the pace simulator. To use it, you can do the following:
 
-cd SOS_Directory/SOS_Callable/compile
+cd RTSOSDIR/compile
+
 make -f makefile_aerosol_phmx_cal
+
 cp Aerosol_Phmx_Cal.exe ../test/PACE_Simulator/alg_test/
+
 cd ../test/PACE_Simulator/alg_test/
+
 ./Aerosol_Phmx_Cal.exe inputfile_for_aerosol_phase_matrix
+
 where "inputfile_for_aerosol_phase_matrix" is the input file for aerosol phase matrix calculator. You will need to generate inputfile_for_aerosol_phase_matrix by using the script 
 PACE_Simulator/python_script/Aerosol_PhaseMatrix_Cal_InputPre.py
 In this script, you also want to specify:
+
 aux_dir='PACEDATADIR/Data/'
 
 The single scattering matrix simulation uses the Mie code developed by M. Mishchenko 
 (Scattering, absorption, and emission of light by small particles, MI Mishchenko, LD Travis, AA Lacis - 2002)
+
 A non spherical dust scattering matrix database is included, which was provided by Prof. Ping Yang at Texas A&M University (Meng, Z., P. Yang, G. Kattawar, L. Bi, K. Liou, and I. Laszlo, 2010: Single-scattering properties of tri-axial ellipsoidal mineral dust aerosols: A database for application to radiative transfer calculations. J. Aerosol Sci., 41, 501–512, https://doi.org/10.1016/j.jaerosci.2010.02.008.)
 
 The single scattering matrix code assumes either bimodal (NMODE=2) or trimodal (NMODE=3) size distribution, see the following structure:
