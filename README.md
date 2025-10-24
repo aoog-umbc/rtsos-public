@@ -32,10 +32,12 @@ RTSOS and the PACE simulator requires a fortran 90 compiler (https://gcc.gnu.org
 Section 1: COMPILE
 
 The steps to use it is: compile the package, configure the input files, and run the code with the executable file. \
-To compile, open a terminal and go to: \
+To compile, open a terminal and go to:
+
 $cd RTSOSDIR/compile
 
-where RTSOSDIR is where you clone this repo. Then try to compile the monochromatic code: \
+where RTSOSDIR is where you clone this repo. Then try to compile the monochromatic code:
+
 $make
 
 If you get an error of missing fortran compiler, examine "Makefile" and specify the correct fortran command to F90. If successful, you have compiled the monochromatic radiative transfer package, which is the core of the PACE simulator.
@@ -51,7 +53,7 @@ LIBSHDF= $(HDF5LIB) -L$(HDF5DIR)/lib/ -lhdf5 -lhdf5_fortran
 
 If these are correctly set, you can compile the pace simulator:
 
-$make clean
+$make clean\
 $make -f makefile_PACE_Simulator_DoubleK
 
 This will compile the pace simulator.
@@ -65,18 +67,18 @@ Section 2.1 PACE Simulator
 
 Next we may try out the pace simulator:
 
-$cp rtsos_PACE_Simulator_DoubleK.exe ../test/PACE_Simulator/
-$cd ../test/PACE_Simulator/
+$cp rtsos_PACE_Simulator_DoubleK.exe ../test/PACE_Simulator/\
+$cd ../test/PACE_Simulator/\
 $mkdir alg_test
 
 You can now generate the input files for the simulator with the python scripts for ocean or land surfaces, respectively:
 
-test/PACE_Simulator/python_script/python_script/pace_simulator_twolayer_inputfile_land.py
+test/PACE_Simulator/python_script/python_script/pace_simulator_twolayer_inputfile_land.py\
 test/PACE_Simulator/python_script/python_script/pace_simulator_twolayer_inputfile_ocean.py
 
 Study these two files before you execute them. Most importantly, change aux_dir and gas_absorption_coeff_dir to be:
  
-aux_dir='PACEDATADIR/Data/'
+aux_dir='PACEDATADIR/Data/'\
 gas_absorption_coeff_dir='PACEDATADIR/Gas_Absorption_Coefficients/'
 
 
@@ -97,7 +99,7 @@ E. P. Shettle and R. W. Fenn, “Models for the aerosols of the lower atmosphere
 
 and 
 
-IAEROSOL=11-20; 
+IAEROSOL=11-20;\
 IRH=1-8 where RH(IRH)=(/0.30,0.50,0.70,0.75,0.80,0.85,0.90,0.95/).
 
 are the new operational aerosol models currently used in the atmospheric correction at GSFC.
@@ -110,18 +112,16 @@ Section 2.2 Single scattering matrix code
 
 If you used IAEROSOL=-99 in the pace simulator input file, you will need to prepare the aerosol phase matrix. A tool was written by Neranga K. Hannadige (https://scholar.google.com/citations?user=0lAwqNsAAAAJ&hl=en) to generate the input scattering matrix files for the pace simulator. To use it, you can do the following:
 
-cd RTSOSDIR/compile
-
-make -f makefile_aerosol_phmx_cal
-
-cp Aerosol_Phmx_Cal.exe ../test/PACE_Simulator/alg_test/
-
-cd ../test/PACE_Simulator/alg_test/
-
+cd RTSOSDIR/compile\
+make -f makefile_aerosol_phmx_cal\
+cp Aerosol_Phmx_Cal.exe ../test/PACE_Simulator/alg_test/\
+cd ../test/PACE_Simulator/alg_test/\
 ./Aerosol_Phmx_Cal.exe inputfile_for_aerosol_phase_matrix
 
 where "inputfile_for_aerosol_phase_matrix" is the input file for aerosol phase matrix calculator. You will need to generate inputfile_for_aerosol_phase_matrix by using the script 
+
 PACE_Simulator/python_script/Aerosol_PhaseMatrix_Cal_InputPre.py
+
 In this script, you also want to specify:
 
 aux_dir='PACEDATADIR/Data/'
