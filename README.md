@@ -26,8 +26,13 @@ You will get two directories. One is PACEDATADIR/Gas_Absorption_Coefficients/, w
 
 The other is PACEDATADIR/Data/, which contains the absorption coefficients of pure water, plankton particles, the birectional reflectance distribution functions of snow surface, scattering matrix of dust particles, the instrument response functions of ocean color instrument, HARP2, and SPEXone, and a number of other data files used in the PACE simulator.
 
-
 RTSOS and the PACE simulator requires a fortran 90 compiler (https://gcc.gnu.org/fortran/), hdf5 (https://www.hdfgroup.org/solutions/hdf5/) and lapack (https://www.netlib.org/lapack/) libraries.
+
+## Prerequisites 
+- Python >= 3.11
+- HDF5 >= 1.10
+- LAPACK >= 3.9
+- a modern Fortran compiler (e.g. gfortran)
 
 Section 1: COMPILE
 
