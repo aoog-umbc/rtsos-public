@@ -46,6 +46,8 @@ Now you can edit the PACE Simulator make file to set the hdf5 library paths:
 
 $emacs makefile_PACE_Simulator_DoubleK
 
+Inside makefile_PACE_Simulator_DoubleK, you want to specify the following directories:
+
 HDF5DIR = /usr/local/Cellar/hdf5@1.10/1.10.7\
 HDF5LIB=-I$(HDF5DIR)/include\
 H5FC=$(HDF5DIR)/bin/h5fc\
