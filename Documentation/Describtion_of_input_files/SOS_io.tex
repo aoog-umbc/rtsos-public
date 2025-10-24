@@ -69,7 +69,7 @@ The first line is the number $N_{st}$ of $\theta_{s}$ angles for the solar incid
 \centering
 \begin{tabular}{llllllll}
 &-1000 &  0.0  & 0.0   &  0.0   &  0.0    & 0.0   & 0.0   \\
-&1        &  0.1  & 1.0   &  0.0   &  0.0    & 0.0   & 0.0   \\
+&1        &  0.1  & 1.0   & 412.0& 215.0 & 0.0   & 0.0   \\
 &-1000 &  0.0  & 0.0   &  0.0   &  0.0    & 0.0   & 0.0   \\
 &-100   &  7.0  & 1.34 &  0.0   &   0.0   & 0.0   & 0.0   \\
 &-1000 &  0.0  & 0.0   &   0.0  &  0.0    & 0.0   & 0.0   \\
@@ -128,7 +128,7 @@ Including the IPT, there are 7 numbers at each line.  The following proctor is u
 \end{tabular}
 \label{tab:InputFile}
 \end{table}
-where BN means Blank Number, which is currently not used by the program; TAU is the optical depth of that layer; LBDOM is the single scattering albedo of that layer; wavelength is in nanometers; Temperature is in Kelvin, EFLRSC is internally used by the inelastic scattering of ocean waters (by default it is set to 0 in monochromatic simulations); ALH is the atmospheric layer top height. ALH is only useful for calculating pseudospherical shell. To perform pseudospherical shell calculation, use the following in your main program:
+where BN means Blank Number, which is currently not used by the program; TAU is the optical depth of that layer; LBDOM is the single scattering albedo of that layer; wavelength is in nanometers; Temperature is in Kelvin, which is only useful when you calculate infrared radiative transfer. EFLRSC is internally used by the inelastic scattering of ocean waters (by default it is set to 0 in monochromatic simulations); ALH is the atmospheric layer top height. ALH is only useful for calculating pseudospherical shell. To perform pseudospherical shell calculation, use the following in your main program:
 
 %/Users/pwzhai/Research/RT/DSCOVR/SnowBRDF_Data/brdfPaperMaterial/  #snow brdf file path
 
@@ -149,13 +149,13 @@ Once the RTSOS code reads an IPT of in (-200 -101, -201, -202, -203), it won't a
 The example input file specifies the following system with each line:
 \begin{itemize}{}
 \item Line 1: A detector is placed at the top of the atmosphere.
-\item Line 2: An atmospheric layer, with an optical thickness of 0.1, and single scattering albedo of 1, IPT=1
+\item Line 2: An atmospheric layer, with an optical thickness of 0.1, and single scattering albedo of 1, IPT=1. Wavelength is 412 nm and temperature is 215 K.
 \item Line 3: A second detector is placed at the bottom of the atmosphere. 
 \item Line 4:  An ocean interface is placed below the atmosphere at the optical depth of 0.1, with the wind speed of 7 m/s, water refractive index is (1.34, 0), sun glint is turned on.
 \item Line 5: A detector is placed at the top of the ocean (just below the ocean interface).
 \item Line 6: An ocean layer is placed below the interface, with optical depth of 0.1, single scattering albedo of 1.0, IPT = 2. Wavelength is 412 nm and temperature is 215 K.
 \item Line 7: A detector is placed at the bottom of the ocean. 
-\item Line 8: A Lambertian bottom is placed at the bottom of the ocean, with reflection albedo of 1.0. The fraction of lambertian reflection is 1.
+\item Line 8: A Lambertian bottom is placed at the bottom of the ocean, with reflection albedo of 1.0. The fraction of lambertian reflection $f_{lamb}$=1. The surface refractive index is (1.5, 0), which is only useful if the lambertian fraction is less than 1. In this case the fraction 1-$f_{lamb}$ is characterized by the Frenesl reflection of a flat surface. 
 \item Line 9:  The total number of scattering is 40, with NQUADA=30, NQUADO=60. 
 \item Line 10: There are two Mie input files, the maximum L order is 30, and the order of Fourier series is 10.
 \item Line 11:  IPT=1   ``RayDepol0.pmtx''                will be used

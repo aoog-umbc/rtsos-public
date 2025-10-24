@@ -171,9 +171,9 @@ aerosol_phasematrix_file_low='output_flexible_aerosol_fullwave.h5'
 #afglmw.dat
 
 ###########
-# Now lets generate the 100 terms of halton sequence between 0 and 1 
+# Now lets generate the 10 terms of halton sequence between 0 and 1
 dim=5
-n_sample=100
+n_sample=10
 
 def primes_from_2_to(n):
     sieve = np.ones(n // 3 + (n % 6 == 2), dtype=np.bool)
