@@ -51,7 +51,7 @@ Inside makefile_PACE_Simulator_DoubleK, you want to specify the following direct
 HDF5DIR = /usr/local/Cellar/hdf5@1.10/1.10.7\
 HDF5LIB=-I$(HDF5DIR)/include\
 H5FC=$(HDF5DIR)/bin/h5fc\
-LIBSHDF= $(HDF5LIB) -L$(HDF5DIR)/lib/ -lhdf5 -lhdf5_fortran
+LIBSHDF= \$(HDF5LIB) -L$(HDF5DIR)/lib/ -lhdf5 -lhdf5_fortran
 
 If these are correctly set, you can compile the pace simulator:
 
