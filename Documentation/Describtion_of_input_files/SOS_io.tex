@@ -34,7 +34,7 @@ cd ../test/monochromatic/
 rtsos_rao_dg.exe inputfile outputfile
 \end{verbatim}
 
-where inputfile is a copy of sosi.dat explained in this document and outputfile is the file name for the output file.
+\noindent where inputfile is a copy of sosi.dat explained in this document and outputfile is the file name for the output file.
 
 \section{Angle file}
 \verb"sosi.amu" specifies the angle related quantities used by the RTSOS code.  An example of the file is:
@@ -110,8 +110,6 @@ The line just after the line of IPT=-100 to the line of IPT=-200 configure the o
 IPT=-200 means a mixture of Lambertian and flat reflecting surface.  
 No more atmosphere and ocean medium configuration is allowed beyond the line of IPT=-200 (-101, or -201) because no medium is beyond the bottom.
 
-Including the IPT, there are 7 numbers at each line.  The following proctor is used for interpreting the inputs:
-
 \begin{table}
 \caption{Inputfile fields}
 \vspace{0.2 in}
@@ -119,7 +117,8 @@ Including the IPT, there are 7 numbers at each line.  The following proctor is u
 \begin{tabular}{llllllll}
 &IPT=-1000 & BN&BN&BN& BN&BN&BN \\
 &IPT $>$ 0 &TAU&LBDOM&wavelength&Temperature&EFLRSC&ALH \\
-&IPT=-101  & windspeed & re(mwater) & im(mwater) & glintflag & RSR0P & BN \\
+&IPT=-101  & windspeed & re(mwater) & im(mwater) & glintflag & RSR0P & FWC \\
+&IPT=-100  & windspeed & re(mwater) & im(mwater) & glintflag,& RSR0P & FWC \\
 &IPT=-102 & windspeed& re(mwater)& im(mwater)&glintflag&temperature&emissivity \\
 &IPT=-200 & albedo &flam&re(mbottom)&im(mbottom)&temperature&emissivity \\
 &IPT=-201 & pBRDFa&pBRDFk&pBRDFb&pBRDFe&re(mbottom)&im(mbottom) \\
@@ -128,20 +127,34 @@ Including the IPT, there are 7 numbers at each line.  The following proctor is u
 \end{tabular}
 \label{tab:InputFile}
 \end{table}
-where BN means Blank Number, which is currently not used by the program; TAU is the optical depth of that layer; LBDOM is the single scattering albedo of that layer; wavelength is in nanometers; Temperature is in Kelvin, which is only useful when you calculate infrared radiative transfer. EFLRSC is internally used by the inelastic scattering of ocean waters (by default it is set to 0 in monochromatic simulations); ALH is the atmospheric layer top height. ALH is only useful for calculating pseudospherical shell. To perform pseudospherical shell calculation, use the following in your main program:
+
+Including the IPT, there are 7 numbers at each line.  Table \ref{tab:InputFile} shows the proctor used for interpreting the inputs. BN means Blank Number, which is currently not used by the program; TAU is the optical depth of that layer; LBDOM is the single scattering albedo of that layer; wavelength is in micron, which is used in inelastic scattering simulations or infrared monochromatic simulations; Temperature is in Kelvin, which is only useful when you calculate infrared radiative transfer. EFLRSC is internally used by the inelastic scattering of ocean waters (by default it is set to 0 in monochromatic simulations); ALH is the atmospheric layer top height. ALH is only useful for calculating pseudospherical shell. To perform pseudospherical shell calculation, use the following in your main program:
 
 %/Users/pwzhai/Research/RT/DSCOVR/SnowBRDF_Data/brdfPaperMaterial/  #snow brdf file path
-
-\verb!USE RTUTILITY, ONLY : PSEUDO_SPHERICAL_SHELL!
+\begin{verbatim}
+USE RTUTILITY, ONLY : PSEUDO_SPHERICAL_SHELL
 .
 .
 .
 
-\verb!PSEUDO_SPHERICAL_SHELL=.true.!
+PSEUDO_SPHERICAL_SHELL=.true.
+\end{verbatim}
 
-And set ALH as the atmospheric layer top heights properly.
+\noindent And set ALH as the atmospheric layer top heights properly.
 
-WindSpeed is the wind speed (m/s); re(mwater) and im(mwater) are the real and imaginary parts of the water refractive index; GlintFlag = 0 includs sun glints while  GlintFlag = 1 does NOT include sun glint; RSR0P is the remote sensing reflectance just above the ocean surface. RSR0P is a user supplied value to calculate how Remote Sensing Reflectance just above ocean water propagate to the sensor level. For normal radiative transfer simulation, RSR0P should be zero by default. RSR0P $>$ 0 should only be used with IPT=-101. 
+WindSpeed is the wind speed (m/s); re(mwater) and im(mwater) are the real and imaginary parts of the water refractive index; GlintFlag = 0 includs sun glints while  GlintFlag = 1 does NOT include sun glint; RSR0P is the remote sensing reflectance just above the ocean surface. RSR0P is a user supplied value to calculate how Remote Sensing Reflectance just above ocean water propagate to the sensor level. 
+
+FWC is the fraction of white cap on surface. By default FWC is set to be zero in the input file, and its actual value will be calculated in RTSOS based on a parameterization in terms of wind speed. If FWC is set to be a number larger than 0 (and smaller than or equal to 1), then  RSR0P should be set to: RSR0P=WCLBDO/PI, where WCLBDO is the equivalent Lambertian reflectance of white cap or other surface debris. Currently the option for user supplied FWC values is only available for IPT=-101 and IPT=-100.
+
+For normal radiative transfer simulation, RSR0P should be zero by default. The interpretation of RSR0P can be summarized in the following four cases: \\
+
+\begin{itemize}
+\item IPT=-101, RSR0P$>$0, FWC=0.0: no ocean radiative transfer will be conducted, RSR0P would be the remote sensing reflectance of the ocean body based on in-situ measurement. \\
+\item  IPT=-101, RSR0P$>$0, FWC$>$0.0:  no ocean radiative transfer will be conducted, RSR0P=WCLBDO/PI, where WCLBDO is the equivalent Lambertian reflectance of white cap or other surface debris, and FWC is the fraction of white cap on surface. \\
+\item  IPT=-100, RSR0P$>$0, FWC$>$0.0:  full atmosphere-ocean radiative transfer will be conducted, RSR0P=WCLBDO/PI, where WCLBDO is the equivalent Lambertian reflectance of white cap or other surface debris, and FWC is the fraction of white cap on surface. \\
+\item  IPT=-100, RSR0P=0, FWC=0.0:  full atmosphere-ocean radiative transfer will be conducted, WCLBDO and FWC are internally calculated in RTSOS based on parameterization in terms of wind speed.
+\end{itemize}
+
 For Lambertian surface, the value of  albedo tells the lambertian surface reflection albedo;  flam is the fraction of the surface which is lambertian reflection; The values of re(mbottom) and im(mbottom) are the real and imaginary refractive index of the surface which are used to determine Fresnel reflection when flam is less than 1. 
 
 Once the RTSOS code reads an IPT of in (-200 -101, -201, -202, -203), it won't accept more atmospheric or ocean layer specification, because there should be nothing below bottom.  The line following the line of IPT=(-200 -101, -201, -202, -203) contains three integers: NCOL, NQUADA, and NQUADO.  NCOL is the number of scattering orders to be performed.  NCOL=10 normally gives fairly good precision. NQUADA and NQUADO are the quadrature numbers needed for the atmosphere and ocean source function integration, respectively.  For the single quadrature code, NQUADO will be ignored.  The next line contains three integers: NUMMIE, MAXLORD, and MAXMORD.  NUMMIE is the number of Mie particle files.  MAXLORD is the maximum L order used to expand the scattering matrices in terms of the Wigner d functions.  MAXMORD is the maximum number of Fourier series order.  There are NUMMIE lines following this line.  Each line specifies the file names of the input files.  The sequence of the file tells the RTSOS code which IPT this file is associated with.
@@ -168,13 +181,37 @@ Hudson, S. R., S. G. Warren, R. E. Brandt, T. C. Grenfell, and D. Six (2006), Sp
 
 If IPT=-202 is specified, the program will read in a string following the pmtx file line which contains the directory of the snow BRDF data.
 
-In the directory that you run \verb!rtsos_rao_dg.exe!, you should have a file called \verb!auxiliary_directory!, which contains the directory of the solar irradiance data file.
+In the directory that you run \verb!rtsos_rao_dg.exe!, you should have a file called \verb!auxiliary_directory!, which contains the directory of the solar irradiance data file, which is needed when you perform infrared radiative transfer simulations.
+
+The solar irradiance data file is among a collection of data files archived for the PACE simulator, which was documented in the README file of this repo:\
+\verb!https://github.com/aoog-umbc/rtsos-public!
+
+If you have not downloaded it yet, the address of the data file is: \\
+\verb!http://doi.org/10.5281/zenodo.17410093!
+
+The file is named as \verb!RTSOS_data_v1.0_20251022.tar.gz!, which can be placed in a convenient location of your choice, let's call it PACEDATADIR.
+
+You can extract the files by doing the following in a linux terminal:
+
+\begin{verbatim}
+cd PACEDATADIR
+tar -xf RTSOS_data_v1.0_20251022.tar.gz
+\end{verbatim}
+
+You will get two directories. One is \verb!PACEDATADIR/Gas_Absorption_Coefficients/!. The other is PACEDATADIR/Data/, which contains f0.txt, the solar irradiance data file. You can do the following to put PACEDATADIR/Data/ to \verb!auxiliary_directory!: \\
+
+\begin{verbatim}
+cd PACEDATADIR/Data/ 
+pwd > SOSDIR/test/monochromatic/auxiliary_directory
+\end{verbatim}
+
+\noindent where SOSDIR/test/monochromatic/ is the directory of \verb!rtsos_rao_dg.exe!, where you will run the program.
 
 \section{A few nots}
 
 If wind speed is smaller than 0.5 m/s, the code will assume the ocean surface is flat.  Otherwise, the random ocean wave surface will be used.  The wave slope distribution will be Cox \& Munk (1954).
 
-Three truncation scheme are used: delta fit, delta m, and delta m+ are now built in in the package and the users can select from one of such truncation techniques.
+Three truncation scheme are used: delta fit, delta m, and delta m+ are now built-in in the package and the users can select from one of such truncation techniques.
 
 White cap parameterization are implemented.  Physically this means that the code can handle a mixture of lambertian reflector and random rough surfaces.
 
