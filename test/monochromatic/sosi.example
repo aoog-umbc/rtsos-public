@@ -41,7 +41,7 @@ glint_flag=1, sunglint turn off.
 # IF EFLRSC/=0 FOR THE OCEAN LAYER
 # fluorescence flag WILL BE TURN ON
 # EFLRSC IN OCEAN WILL BE THE EMITTING IRRADIANCE OF THE FLUORESCENCE.
-# fluorescence calculation can only be done with a spectial main program
+# fluorescence calculation can only be done with a special main program
 # because it involves multiple wavelength calculations.
 # This is why that EFLRSC is always 0 in this file.
 
