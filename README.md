@@ -74,6 +74,7 @@ For monochromatic simulation, users are referred to the documentations located a
 Section 2.1 PACE Simulator
 
 Section 2.1.1 Input files 
+
 To run the PACE simulator, user should become familiar with the input file formats. 
 We provided two python scripts to generate the input files, one for ocean and the other for land surfaces, respectively, which are located at:
 
