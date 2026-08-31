@@ -122,4 +122,4 @@ PACE_MIE_PHMX_Init.o: $(DIRMain)/PACE_MIE_PHMX_Init.f90
 main_PACE_Simulator_DoubleK.o: $(DIRMain)/main_PACE_Simulator_DoubleK.f90
 	$(F90) -c $(FCFLAG) $(LIBSHDF) $(DIRMain)/main_PACE_Simulator_DoubleK.f90
 
-clean:;       rm -f *.o *.exe
+clean:;       rm -f *.o *.exe *.mod
